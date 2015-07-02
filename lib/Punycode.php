@@ -29,6 +29,7 @@ class Punycode
      * Bootstring parameter values
      *
      */
+    
     const BASE         = 36;
     const TMIN         = 1;
     const TMAX         = 26;
@@ -38,12 +39,13 @@ class Punycode
     const INITIAL_N    = 128;
     const PREFIX       = 'xn--';
     const DELIMITER    = '-';
-
+    
     /**
      * Encode table
      *
      * @param array
      */
+    
     protected static $_encodeTable = array(
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
         'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
@@ -55,6 +57,7 @@ class Punycode
      *
      * @param array
      */
+    
     protected static $_decodeTable = array(
         'a' =>  0, 'b' =>  1, 'c' =>  2, 'd' =>  3, 'e' =>  4, 'f' =>  5,
         'g' =>  6, 'h' =>  7, 'i' =>  8, 'j' =>  9, 'k' => 10, 'l' => 11,
@@ -66,17 +69,20 @@ class Punycode
 
     /**
      * Encode a domain to its Punycode version
-     *
+      *
      * @param string $input Domain name in Unicde to be encoded
      * @return string Punycode representation in ASCII
      */
+    
     public static function encode($input)
     {
         $parts = explode('.', $input);
-        foreach ($parts as &$part) {
+        
+        foreach ($parts as &$part)
+        {
             $part = static::_encodePart($part);
         }
-
+        
         return implode('.', $parts);
     }
 
@@ -86,64 +92,75 @@ class Punycode
      * @param string $input Part of a domain name
      * @return string Punycode representation of a domain part
      */
+    
     protected static function _encodePart(&$input)
     {
         $codePoints = &static::_codePoints($input);
-
+        
         $n = static::INITIAL_N;
         $bias = static::INITIAL_BIAS;
         $delta = 0;
         $h = $b = count($codePoints['basic']);
-
+        
         $output = static::getString($codePoints['basic']);
-		
-        if ($input === $output) {
+        
+        if ($input === $output)
+        {
             return $output;
         }
-		
-        if ($b > 0) {
+        
+        if ($b > 0)
+        {
             $output .= static::DELIMITER;
         }
-
+        
         $codePoints['nonBasic'] = array_unique($codePoints['nonBasic']);
         sort($codePoints['nonBasic']);
-
+        
         $i = 0;
         $length = $codePoints['length'];
-        while ($h < $length) {
+        
+        while ($h < $length)
+        {
             $m = $codePoints['nonBasic'][$i++];
             $delta = $delta + ($m - $n) * ($h + 1);
             $n = $m;
-
-            foreach ($codePoints['all'] as $c) {
-                if ($c < $n || $c < static::INITIAL_N) {
+            
+            foreach ($codePoints['all'] as $c)
+            {
+                if ($c < $n || $c < static::INITIAL_N)
+                {
                     $delta++;
                 }
-                if ($c === $n) {
+                if ($c === $n)
+                {
                     $q = $delta;
-                    for ($k = static::BASE;; $k += static::BASE) {
+                    for ($k = static::BASE;; $k += static::BASE)
+                    {
                         $t = static::_calculateThreshold($k, $bias);
-                        if ($q < $t) {
+                        
+                        if ($q < $t)
+                        {
                             break;
                         }
-
+                        
                         $code = $t + (($q - $t) % (static::BASE - $t));
                         $output .= static::$_encodeTable[$code];
-
+                        
                         $q = ($q - $t) / (static::BASE - $t);
                     }
-
+                    
                     $output .= static::$_encodeTable[$q];
                     $bias = static::_adapt($delta, $h + 1, ($h === $b));
                     $delta = 0;
                     $h++;
                 }
             }
-
+            
             $delta++;
             $n++;
         }
-
+        
         return static::PREFIX . $output;
     }
 
@@ -153,18 +170,22 @@ class Punycode
      * @param string $input Domain name in Punycode
      * @return string Unicode domain name
      */
+    
     public static function decode($input)
     {
         $parts = explode('.', $input);
-        foreach ($parts as &$part) {
-            if (strpos($part, static::PREFIX) !== 0) {
+        
+        foreach ($parts as &$part)
+        {
+            if (strpos($part, static::PREFIX) !== 0)
+            {
                 continue;
             }
-
+            
             $part = substr($part, strlen(static::PREFIX));
             $part = static::_decodePart($part);
         }
-
+        
         return implode('.', $parts);
     }
 
@@ -174,45 +195,53 @@ class Punycode
      * @param string $input Part of a domain name
      * @return string Unicode domain part
      */
+    
     protected static function _decodePart($input)
     {
         $n = static::INITIAL_N;
         $i = 0;
         $bias = static::INITIAL_BIAS;
         $output = '';
-
+        
         $pos = strrpos($input, static::DELIMITER);
-        if ($pos !== false) {
+        
+        if ($pos !== false)
+        {
             $output = substr($input, 0, $pos++);
-        } else {
+        }
+        else
+        {
             $pos = 0;
         }
-
+        
         $outputLength = strlen($output);
         $inputLength = strlen($input);
-				$res = array();
-		
-        while ($pos < $inputLength) {
+        $res = array();
+        
+        while ($pos < $inputLength)
+        {
             $oldi = $i;
             $w = 1;
-
-            for ($k = static::BASE;; $k += static::BASE) {
+            
+            for ($k = static::BASE;; $k += static::BASE)
+            {
                 $digit = static::$_decodeTable[$input[$pos++]];
                 $i = $i + ($digit * $w);
                 $t = static::_calculateThreshold($k, $bias);
-
-                if ($digit < $t) {
+                
+                if ($digit < $t)
+                {
                     break;
                 }
-
+                
                 $w = $w * (static::BASE - $t);
             }
-
+            
             $bias = static::_adapt($i - $oldi, ++$outputLength, ($oldi === 0));
             $n = $n + (int) ($i / $outputLength);
             $i = $i % ($outputLength);
-			
-			if($n < 0x80)
+            
+            if($n < 0x80)
             {
                 $cp = chr($n);
             }
@@ -227,19 +256,19 @@ class Punycode
             elseif($n <= 0x10FFFF)
             {
                 $cp = chr(($n >> 18) + 0xF0) . $hr((($n >> 12) & 0x3F) + 0x80)
-                                     . chr((($n >> 6) & 0x3F) + 0x80) . chr(($n & 0x3F) + 0x80);
+                    . chr((($n >> 6) & 0x3F) + 0x80) . chr(($n & 0x3F) + 0x80);
             }
             else
             {
                 throw new Exception("Invalid UTF-8");
             }
-			
+            
             $output = substr($output, 0, $i) . $cp . substr($output, $i, $outputLength - 1);
-			
+            
             $i += strlen($cp);
         }
-		
-				return $output;
+        
+        return $output;
     }
 
     /**
@@ -249,13 +278,18 @@ class Punycode
      * @param integer $bias
      * @return integer
      */
+    
     protected static function _calculateThreshold($k, $bias)
     {
-        if ($k <= $bias + static::TMIN) {
+        if ($k <= $bias + static::TMIN)
+        {
             return static::TMIN;
-        } elseif ($k >= $bias + static::TMAX) {
+        }
+        elseif ($k >= $bias + static::TMAX)
+        {
             return static::TMAX;
         }
+        
         return $k - $bias;
     }
 
@@ -267,22 +301,26 @@ class Punycode
      * @param boolean $firstTime
      * @return integer
      */
+    
     protected static function _adapt($delta, $numPoints, $firstTime)
     {
         $delta = (int) (
             ($firstTime)
-                ? $delta / static::DAMP
-                : $delta / 2
-            );
+            ? $delta / static::DAMP
+            : $delta / 2
+        );
+        
         $delta += (int) ($delta / $numPoints);
-
+        
         $k = 0;
-        while ($delta > ((static::BASE - static::TMIN) * static::TMAX) / 2) {
+        while ($delta > ((static::BASE - static::TMIN) * static::TMAX) / 2)
+        {
             $delta = (int) ($delta / (static::BASE - static::TMIN));
             $k = $k + static::BASE;
         }
+        
         $k = $k + (int) (((static::BASE - static::TMIN + 1) * $delta) / ($delta + static::SKEW));
-
+        
         return $k;
     }
 
@@ -292,6 +330,7 @@ class Punycode
      * @param string $input
      * @return array Multi-dimension array with basic, non-basic and aggregated code points
      */
+    
     protected static function &_codePoints($input)
     {
         $codePoints = array(
@@ -299,22 +338,27 @@ class Punycode
             'basic'    => array(),
             'nonBasic' => array(),
         );
-		
-				$codes = &static::getCharsCodes($input);
-				$codePoints['length'] = $length = count($codes);
-		
-        for ($i = 0; $i < $length; $i++) {
+        
+        $codes = &static::getCharsCodes($input);
+        $codePoints['length'] = $length = count($codes);
+        
+        for ($i = 0; $i < $length; $i++)
+        {
             $code = $codes[$i];
-            if ($code < 128) {
+            
+            if ($code < 128)
+            {
                 $codePoints['all'][] = $codePoints['basic'][] = $code;
-            } else {
+            }
+            else
+            {
                 $codePoints['all'][] = $codePoints['nonBasic'][] = $code;
             }
         }
-		
+        
         return $codePoints;
     }
-	
+
     protected static function &getCharsCodes(&$bytes)
     {
         static $codes = null;
@@ -328,137 +372,138 @@ class Punycode
                 $codes[chr($i)] = $i;
             }
         }
-             
+        
         $utf8 = array();
         $l = strlen($bytes);
         $p = 0;
         $hasErrors = false;
         
-        do {
-                $cu1 = $codes[$bytes[$p++]];
-             
-                if($cu1 < 0x80)
+        do
+        {
+            $cu1 = $codes[$bytes[$p++]];
+            
+            if($cu1 < 0x80)
+            {
+                $utf8[] = $cu1;
+            }
+            elseif($cu1 < 0xC2)
+            {
+                $utf8[] = 0xFFFD;
+                $hasErrors = true;
+            }
+            elseif($cu1 < 0xE0)
+            {
+                $cu2 = $codes[$bytes[$p++]];
+                
+                if(($cu2 & 0xC0) != 0x80)
                 {
-                        $utf8[] = $cu1;
+                    $p--;
+                    $utf8[] = 0xFFFD;
+                    $hasErrors = true;
+                    continue;
                 }
-                elseif($cu1 < 0xC2)
+                
+                $utf8[] = ($cu1 << 6) + $cu2 - 0x3080;
+            }
+            elseif($cu1 < 0xF0)
+            {
+                $cu2 = $codes[$bytes[$p++]];
+                
+                if((($cu2 & 0xC0) != 0x80) || ($cu1 == 0xE0 && $cu2 < 0xA0))
                 {
-                        $utf8[] = 0xFFFD;
-                        $hasErrors = true;
+                    $p--;
+                    $utf8[] = 0xFFFD;
+                    $hasErrors = true;
+                    continue;
                 }
-                elseif($cu1 < 0xE0)
+                
+                $cu3 = $codes[$bytes[$p++]];
+                
+                if(($cu3 & 0xC0) != 0x80)
                 {
-                        $cu2 = $codes[$bytes[$p++]];
-                     
-                        if(($cu2 & 0xC0) != 0x80)
-                        {
-                                $p--;
-                                $utf8[] = 0xFFFD;
-                                $hasErrors = true;
-                                continue;
-                        }
-                     
-                        $utf8[] = ($cu1 << 6) + $cu2 - 0x3080;
+                    $p -= 2;
+                    $utf8[] = 0xFFFD;
+                    $hasErrors = true;
+                    continue;
                 }
-                elseif($cu1 < 0xF0)
+                
+                $utf8[] = ($cu1 << 12) + ($cu2 << 6) + $cu3 - 0xE2080;
+            
+            }
+            elseif($cu1 < 0xF5)
+            {
+                $cu2 = $codes[$bytes[$p++]];
+                
+                if((($cu2 & 0xC0) != 0x80) || ($cu1 == 0xF0 && $cu2 < 0x90) || ($cu1 == 0xF4 && $cu2 >= 0x90))
                 {
-                        $cu2 = $codes[$bytes[$p++]];
-                     
-                        if((($cu2 & 0xC0) != 0x80) || ($cu1 == 0xE0 && $cu2 < 0xA0))
-                        {
-                                $p--;
-                                $utf8[] = 0xFFFD;
-                                $hasErrors = true;
-                                continue;
-                        }
-                     
-                        $cu3 = $codes[$bytes[$p++]];
-                     
-                        if(($cu3 & 0xC0) != 0x80)
-                        {
-                                $p -= 2;
-                                $utf8[] = 0xFFFD;
-                                $hasErrors = true;
-                                continue;
-                        }
-                     
-                        $utf8[] = ($cu1 << 12) + ($cu2 << 6) + $cu3 - 0xE2080;
-                     
+                    $p--;
+                    $utf8[] = 0xFFFD;
+                    $hasErrors = true;
+                    continue;
                 }
-                elseif($cu1 < 0xF5)
+                
+                $cu3 = $codes[$bytes[$p++]];
+                
+                if(($cu3 & 0xC0) != 0x80)
                 {
-                        $cu2 = $codes[$bytes[$p++]];
-                     
-                        if((($cu2 & 0xC0) != 0x80) || ($cu1 == 0xF0 && $cu2 < 0x90) || ($cu1 == 0xF4 && $cu2 >= 0x90))
-                        {
-                                $p--;
-                                $utf8[] = 0xFFFD;
-                                $hasErrors = true;
-                                continue;
-                        }
-                     
-                        $cu3 = $codes[$bytes[$p++]];
-                     
-                        if(($cu3 & 0xC0) != 0x80)
-                        {
-                                $p -= 2;
-                                $utf8[] = 0xFFFD;
-                                $hasErrors = true;
-                                continue;
-                        }
-                     
-                        $cu4 = $codes[$bytes[$p++]];
-                     
-                        if(($cu4 & 0xC0) != 0x80)
-                        {
-                                $p -= 3;
-                                $utf8[] = 0xFFFD;
-                                $hasErrors = true;
-                                continue;
-                        }
-                     
-                        $utf8[] = ($cu1 << 18) + ($cu2 << 12) + ($cu3 << 6) + $cu4 - 0x3C82080;
-                     
+                    $p -= 2;
+                    $utf8[] = 0xFFFD;
+                    $hasErrors = true;
+                    continue;
                 }
-                else
+                
+                $cu4 = $codes[$bytes[$p++]];
+                
+                if(($cu4 & 0xC0) != 0x80)
                 {
-                        $utf8[] = 0xFFFD;
-                        $hasErrors = true;
+                    $p -= 3;
+                    $utf8[] = 0xFFFD;
+                    $hasErrors = true;
+                    continue;
                 }
-             
-        } while($p < $l);
+                
+                $utf8[] = ($cu1 << 18) + ($cu2 << 12) + ($cu3 << 6) + $cu4 - 0x3C82080;
+            
+            }
+            else
+            {
+                $utf8[] = 0xFFFD;
+                $hasErrors = true;
+            }
+        
+        }
+        while($p < $l);
         
         return $utf8;
     }
-    
+
     protected static function getString(&$charpoints)
     {
-        
         $output = '';
         
         foreach($charpoints as &$cp)
         {
-            
+        
             if($cp < 0x80)
             {
-                    $output .= chr($cp);
+                $output .= chr($cp);
             }
             elseif($cp <= 0x7FF)
             {
-                    $output .= chr(($cp >> 6) + 0xC0) . chr(($cp & 0x3F) + 0x80);
+                $output .= chr(($cp >> 6) + 0xC0) . chr(($cp & 0x3F) + 0x80);
             }
             elseif($cp <= 0xFFFF)
             {
-                    $output .= chr(($cp >> 12) + 0xE0) . chr((($cp >> 6) & 0x3F) + 0x80) . chr(($cp & 0x3F) + 0x80);
+                $output .= chr(($cp >> 12) + 0xE0) . chr((($cp >> 6) & 0x3F) + 0x80) . chr(($cp & 0x3F) + 0x80);
             }
             elseif($cp <= 0x10FFFF)
             {
-                    $output .= chr(($cp >> 18) + 0xF0) . $hr((($cp >> 12) & 0x3F) + 0x80)
-                                                             . chr((($cp >> 6) & 0x3F) + 0x80) . chr(($cp & 0x3F) + 0x80);
+                $output .= chr(($cp >> 18) + 0xF0) . $hr((($cp >> 12) & 0x3F) + 0x80)
+                        . chr((($cp >> 6) & 0x3F) + 0x80) . chr(($cp & 0x3F) + 0x80);
             }
             else
             {
-                    throw new Exception("Invalid UTF-8");
+                throw new Exception("Invalid UTF-8");
             }
         }
         
