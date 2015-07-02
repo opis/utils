@@ -1,0 +1,24 @@
+{
+    "name": "opis/utils",
+    "description": "A collection of useful classes",
+    "keywords": ["utf8", "utf8 string", "url", "punycode", "validator", "form validation"],
+    "homepage": "http://opis.io",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Marius Sarca",
+            "email": "marius.sarca@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-4": {"Opis\\Utils\\": "lib/"}
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}
