@@ -1,0 +1,6 @@
+Opis Utils
+Copyright 2015 Marius Sarca
+
+This product contains a modified version of TrueServer B.V.'s `Punycode` class.
+    * License: license/LICENSE.punycode (MIT license)
+    * Homepage: https://github.com/true/php-punycode
