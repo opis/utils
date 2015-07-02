@@ -46,7 +46,7 @@ class Punycode
      * @param array
      */
     
-    protected static $_encodeTable = array(
+    protected static $encodeTable = array(
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
         'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
         'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -58,7 +58,7 @@ class Punycode
      * @param array
      */
     
-    protected static $_decodeTable = array(
+    protected static $decodeTable = array(
         'a' =>  0, 'b' =>  1, 'c' =>  2, 'd' =>  3, 'e' =>  4, 'f' =>  5,
         'g' =>  6, 'h' =>  7, 'i' =>  8, 'j' =>  9, 'k' => 10, 'l' => 11,
         'm' => 12, 'n' => 13, 'o' => 14, 'p' => 15, 'q' => 16, 'r' => 17,
@@ -80,7 +80,7 @@ class Punycode
         
         foreach ($parts as &$part)
         {
-            $part = static::_encodePart($part);
+            $part = static::encodePart($part);
         }
         
         return implode('.', $parts);
@@ -93,9 +93,9 @@ class Punycode
      * @return string Punycode representation of a domain part
      */
     
-    protected static function _encodePart(&$input)
+    protected static function encodePart(&$input)
     {
-        $codePoints = &static::_codePoints($input);
+        $codePoints = &static::codePoints($input);
         
         $n = static::INITIAL_N;
         $bias = static::INITIAL_BIAS;
@@ -137,7 +137,7 @@ class Punycode
                     $q = $delta;
                     for ($k = static::BASE;; $k += static::BASE)
                     {
-                        $t = static::_calculateThreshold($k, $bias);
+                        $t = static::calculateThreshold($k, $bias);
                         
                         if ($q < $t)
                         {
@@ -145,13 +145,13 @@ class Punycode
                         }
                         
                         $code = $t + (($q - $t) % (static::BASE - $t));
-                        $output .= static::$_encodeTable[$code];
+                        $output .= static::$encodeTable[$code];
                         
                         $q = ($q - $t) / (static::BASE - $t);
                     }
                     
-                    $output .= static::$_encodeTable[$q];
-                    $bias = static::_adapt($delta, $h + 1, ($h === $b));
+                    $output .= static::$encodeTable[$q];
+                    $bias = static::adapt($delta, $h + 1, ($h === $b));
                     $delta = 0;
                     $h++;
                 }
@@ -183,7 +183,7 @@ class Punycode
             }
             
             $part = substr($part, strlen(static::PREFIX));
-            $part = static::_decodePart($part);
+            $part = static::decodePart($part);
         }
         
         return implode('.', $parts);
@@ -196,7 +196,7 @@ class Punycode
      * @return string Unicode domain part
      */
     
-    protected static function _decodePart($input)
+    protected static function decodePart($input)
     {
         $n = static::INITIAL_N;
         $i = 0;
@@ -225,9 +225,9 @@ class Punycode
             
             for ($k = static::BASE;; $k += static::BASE)
             {
-                $digit = static::$_decodeTable[$input[$pos++]];
+                $digit = static::$decodeTable[$input[$pos++]];
                 $i = $i + ($digit * $w);
-                $t = static::_calculateThreshold($k, $bias);
+                $t = static::calculateThreshold($k, $bias);
                 
                 if ($digit < $t)
                 {
@@ -237,7 +237,7 @@ class Punycode
                 $w = $w * (static::BASE - $t);
             }
             
-            $bias = static::_adapt($i - $oldi, ++$outputLength, ($oldi === 0));
+            $bias = static::adapt($i - $oldi, ++$outputLength, ($oldi === 0));
             $n = $n + (int) ($i / $outputLength);
             $i = $i % ($outputLength);
             
@@ -279,7 +279,7 @@ class Punycode
      * @return integer
      */
     
-    protected static function _calculateThreshold($k, $bias)
+    protected static function calculateThreshold($k, $bias)
     {
         if ($k <= $bias + static::TMIN)
         {
@@ -302,7 +302,7 @@ class Punycode
      * @return integer
      */
     
-    protected static function _adapt($delta, $numPoints, $firstTime)
+    protected static function adapt($delta, $numPoints, $firstTime)
     {
         $delta = (int) (
             ($firstTime)
@@ -331,7 +331,7 @@ class Punycode
      * @return array Multi-dimension array with basic, non-basic and aggregated code points
      */
     
-    protected static function &_codePoints($input)
+    protected static function &codePoints($input)
     {
         $codePoints = array(
             'all'      => array(),
