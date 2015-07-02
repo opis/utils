@@ -1,6 +1,6 @@
 {
     "name": "opis/utils",
-    "description": "A collection of useful classes",
+    "description": "A collection of useful classes that deals with UTF-8 strings, URLs, punycode, form validation and more",
     "keywords": ["utf8", "utf8 string", "url", "punycode", "validator", "form validation"],
     "homepage": "http://opis.io",
     "license": "Apache-2.0",
