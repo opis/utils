@@ -22,10 +22,10 @@ namespace Opis\Utils;
 
 class Url
 {
-	
+
 	const URI_REGEX = '`^(?P<scheme>([^:/?#]+):)?(?P<authority>//([^/?#]*))?(?P<path>[^?#]*)(?P<query>\?([^#]*))?(?P<fragment>#(.*))?`';
 	const AUTHORITY_REGEX = '`^//((?P<host>[^/?#:]+))?(:(?P<port>[0-9]+))?`';
-	
+
 	protected static $empty = array(
 		'scheme' => '',
 		'authority' => '',
@@ -33,16 +33,16 @@ class Url
 		'query' => '',
 		'fragment' => '',
 	);
-	
-    protected $url;
+
+	protected $url;
 	protected $components;
 	protected $authority;
-	
+
 	protected function __construct(array $components)
-    {
+	{
 		$this->components = $components;
 	}
-	
+
 	protected function &getAuthority()
 	{
 		if($this->authority === null)
@@ -66,7 +66,7 @@ class Url
 		
 		return $this->authority;
 	}
-	
+
 	public function __get($value)
 	{
 		if(isset($this->components[$value]))
@@ -76,7 +76,7 @@ class Url
 		else
 		{
 			$authority = &$this->getAuthority();
-            
+			
 			if (isset($authority[$value]))
 			{
 				return $authority[$value];
@@ -85,9 +85,9 @@ class Url
 		
 		return  null;
 	}
-	
+
 	public function __toString()
-    {
+	{
 		if($this->url === null)
 		{
 			$c = $this->components;
@@ -104,16 +104,11 @@ class Url
 		
 		return $this->url;
 	}
-	
-	public function toHumanString()
-    {
-		return $this->toStr(false);
-	}
-	
+
 	protected static function merge(Url $base, $path)
 	{
 		if (!$base->components['path'])
-        {
+		{
 			return '/' . $base;
 		}
 		
@@ -121,7 +116,7 @@ class Url
 		$paths[count($paths) - 1] = $path;
 		return implode('/', $paths);
 	}
-	
+
 	protected static function removeDotSegments($path)
 	{
 		$stack = array();
@@ -143,15 +138,15 @@ class Url
 		
 		return implode('/', $stack);
 	}
-	
+
 	public static function components($url)
 	{
 		preg_match(static::URI_REGEX, $url, $match);
 		
 		foreach($match as $key => $value)
-        {
+		{
 			if (!is_integer($key))
-            {
+			{
 				$components[$key] = $value;
 			}
 		}
@@ -160,17 +155,17 @@ class Url
 		
 		return $components;
 	}
-	
+
 	public static function parse($url)
 	{
 		if ($url instanceof Url)
-        {
+		{
 			return $url;
 		}
-        
+		
 		return new static(static::components($url));
 	}
-	
+
 	public static function compose($base, $relative)
 	{
 		$b = static::parse($base);
@@ -202,7 +197,7 @@ class Url
 				if(!$r->components['path'])
 				{
 					$t->components['path'] = $b->components['path'];
-					
+				
 					if($r->components['query'])
 					{
 						$t->components['query'] = $r->components['query'];
@@ -237,5 +232,5 @@ class Url
 		
 		return $t;
 	}
-	
+
 }
