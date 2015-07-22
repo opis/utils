@@ -23,11 +23,11 @@ namespace Opis\Utils;
 
 class ClassLoader
 {
+    protected static $directories;
+    
     protected static $aliases = array();
     
     protected static $classes = array();
-    
-    protected static $directories;
     
     protected static $namespaces = array();
 
@@ -39,6 +39,7 @@ class ClassLoader
     public static function directory($path)
     {
         $path = rtrim($path);
+        
         if (!in_array($path, self::$directories))
         {
             self::$directories[] = $path;
