@@ -6,7 +6,8 @@ Opis Utils
 
 Utilitary classes
 --------------
-**Opis Utils** is a collection of utilitary classes.
+**Opis Utils** is a collection of useful classes that will help you
+with UTF 8 strings, URLs, form validators, autoloading, versions and others. 
 
 ### License
 
