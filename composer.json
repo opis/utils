@@ -15,10 +15,5 @@
     },
     "autoload": {
         "psr-4": {"Opis\\Utils\\": "lib/"}
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.0-dev"
-        }
     }
 }
