@@ -104,6 +104,10 @@ class Mutex
         return true;
     }
     
+    /**
+     * Destructor
+     */
+    
     public function __destruct()
     {
         $this->unlock();
