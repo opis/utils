@@ -22,12 +22,32 @@ namespace Opis\Utils;
 
 class ArrayHandler
 {
+    /** @var    array   The array */
     protected $item;
+    
+    /**
+     * Constructor
+     *
+     * @access  public
+     *
+     * @param   array   $array  (optional) The array
+     */
     
     public function __construct(array $array = array())
     {
         $this->item = $array;
     }
+    
+    /**
+     * Get the value stored under the specified path
+     *
+     * @access  public
+     *
+     * @param   string  $path       Value's path
+     * @param   mixed   $default    Default value that will be returned
+     *
+     * @return  mixed
+     */
     
     public function get($path, $default = null)
     {
@@ -50,15 +70,47 @@ class ArrayHandler
         return isset($item[$last]) ?: $default;
     }
     
+    /**
+     * Check if a path contains any value
+     *
+     * @access  public
+     *
+     * @param   string  $path   Path to check
+     *
+     * @return  boolean
+     */
+    
     public function has($path)
     {
         return $this !== $this->get($path, $this);
     }
     
+    /**
+     * Store a value
+     *
+     * @access  public
+     *
+     * @param   string  $path   Where to store
+     * @param   mixed   $value  What to store
+     */
+    
     public function put($path, $value)
     {
         $path = explode('.', $path);
-        $item = 
+        $last = array_pop($path);
+        $item = &$this->item;
+        
+        foreach($path as $key)
+        {
+            if(!isset($item[$key]))
+            {
+                $item[$key] = array();
+            }
+            
+            $item = &$item[$key];
+        }
+        
+        $item[$last] = $value;
         
     }
     
