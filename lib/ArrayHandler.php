@@ -41,6 +41,8 @@ class ArrayHandler implements ArrayAccess
     
     public function __construct(array $array = array(), $constraint = false)
     {
+        $constraint = (bool) $constraint;
+        
         if($constraint)
         {
             $array = json_decode(json_encode($array), true);
@@ -107,17 +109,22 @@ class ArrayHandler implements ArrayAccess
      * @param   boolean $constraint (optional) Constraint
      */
     
-    public function set($path, $value, $constraint = false)
+    public function set($path, $value, $constraint = null)
     {
-        if(is_null($path))
+        if($constraint === null)
         {
-            $this->item[] = $value;
-            return;
+            $constraint = $this->constraint;
         }
         
         if($constraint)
         {
             $value = json_decode(json_encode($value), true);
+        }
+        
+        if(is_null($path))
+        {
+            $this->item[] = $value;
+            return;
         }
         
         $path = explode('.', $path);
@@ -183,7 +190,7 @@ class ArrayHandler implements ArrayAccess
     
     public function offsetSet($offset, $value)
     {
-        return $this->set($offset, $value, $this->constraint);
+        return $this->set($offset, $value);
     }
 
     /**
