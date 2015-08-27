@@ -30,6 +30,9 @@ class ArrayHandler implements ArrayAccess
     /** @var    boolean Default constraint */
     protected $constraint;
     
+    /** @var    string  Path separator */
+    protected $separator;
+    
     /**
      * Constructor
      *
@@ -39,7 +42,7 @@ class ArrayHandler implements ArrayAccess
      * @param   boolean $constraint (optional) Constraint
      */
     
-    public function __construct(array $array = array(), $constraint = false)
+    public function __construct(array $array = array(), $constraint = false, $separator = '.')
     {
         $constraint = (bool) $constraint;
         
@@ -49,6 +52,7 @@ class ArrayHandler implements ArrayAccess
         }
         
         $this->item = $array;
+        $this->separator = $separator;
         $this->constraint = $constraint;
     }
     
@@ -65,23 +69,20 @@ class ArrayHandler implements ArrayAccess
     
     public function get($path, $default = null)
     {
-        $path = explode('.', $path);
-        $last = array_pop($path);
-        
+        $path = explode($this->separator, $path);
         $item = &$this->item;
         
         foreach($path as $key)
         {
-            if(isset($item[$key]))
+            if(!is_array($item[$key]) || !isset($item[$key]))
             {
-                $item = &$item[$key];
-                continue;
+                return $default;
             }
             
-            return $default;
+            $item = &$item[$key];
         }
         
-        return isset($item[$last]) ? $item[$last] : $default;
+        return $item;
     }
     
     /**
@@ -127,7 +128,7 @@ class ArrayHandler implements ArrayAccess
             return;
         }
         
-        $path = explode('.', $path);
+        $path = explode($this->separator, $path);
         $last = array_pop($path);
         $item = &$this->item;
         
@@ -157,7 +158,7 @@ class ArrayHandler implements ArrayAccess
     
     public function remove($path)
     {
-        $path = explode('.', $path);
+        $path = explode($this->separator, $path);
         $last = array_pop($path);
         
         $item = &$this->item;
