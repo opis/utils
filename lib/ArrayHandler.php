@@ -20,10 +20,15 @@
 
 namespace Opis\Utils;
 
-class ArrayHandler
+use ArrayAccess;
+
+class ArrayHandler implements ArrayAccess
 {
     /** @var    array   The array */
     protected $item;
+    
+    /** @var    boolean Default constraint */
+    protected $constraint;
     
     /**
      * Constructor
@@ -42,6 +47,7 @@ class ArrayHandler
         }
         
         $this->item = $array;
+        $this->constraint = $constraint;
     }
     
     /**
@@ -103,6 +109,12 @@ class ArrayHandler
     
     public function put($path, $value, $constraint = false)
     {
+        if(is_null($path))
+        {
+            $this->item[] = $value;
+            return;
+        }
+        
         if($constraint)
         {
             $value = json_decode(json_encode($value), true);
@@ -161,6 +173,50 @@ class ArrayHandler
         }
         
         return false;
+    }
+    
+    /**
+     * Method inherited from ArrayAccess
+     *
+     * @access  public
+     */
+    
+    public function offsetSet($offset, $value)
+    {
+        return $this->put($offset, $value, $this->constraint);
+    }
+
+    /**
+     * Method inherited from ArrayAccess
+     *
+     * @access  public
+     */
+    
+    public function offsetExists($offset)
+    {
+        return $this->has($offset);
+    }
+
+    /**
+     * Method inherited from ArrayAccess
+     *
+     * @access  public
+     */
+    
+    public function offsetUnset($offset)
+    {
+        return $this->remove($offset);
+    }
+
+    /**
+     * Method inherited from ArrayAccess
+     *
+     * @access  public
+     */
+        
+    public function offsetGet($offset)
+    {
+        return $this->get($offset);
     }
     
     /**
