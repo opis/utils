@@ -30,11 +30,17 @@ class ArrayHandler
      *
      * @access  public
      *
-     * @param   array   $array  (optional) The array
+     * @param   array   $array      (optional) The array
+     * @param   boolean $constraint (optional) Constraint
      */
     
-    public function __construct(array $array = array())
+    public function __construct(array $array = array(), $constraint = false)
     {
+        if($constraint)
+        {
+            $array = json_decode(json_encode($array), true);
+        }
+        
         $this->item = $array;
     }
     
@@ -90,13 +96,18 @@ class ArrayHandler
      *
      * @access  public
      *
-     * @param   string  $path   Where to store
-     * @param   mixed   $value  The value being stored
+     * @param   string  $path       Where to store
+     * @param   mixed   $value      The value being stored
+     * @param   boolean $constraint (optional) Constraint
      */
     
-    public function put($path, $value)
+    public function put($path, $value, $constraint = false)
     {
-        $value = json_decode(json_encode($value), true);
+        if($constraint)
+        {
+            $value = json_decode(json_encode($value), true);
+        }
+        
         $path = explode('.', $path);
         $last = array_pop($path);
         $item = &$this->item;
@@ -113,6 +124,43 @@ class ArrayHandler
         
         $item[$last] = $value;
         
+    }
+    
+    /**
+     * Remove a path
+     *
+     * @access  public
+     *
+     * @param   string  $path   Path to be removed
+     * 
+     * @return  boolean
+     */
+    
+    public function remove($path)
+    {
+        $path = explode('.', $path);
+        $last = array_pop($path);
+        
+        $item = &$this->item;
+        
+        foreach($path as $key)
+        {
+            if(isset($item[$key]))
+            {
+                $item = &$item[$key];
+                continue;
+            }
+            
+            return false;
+        }
+        
+        if(is_array($item[$last]) || isset($item[$last]))
+        {
+            unset($item[$last]);
+            return true;
+        }
+        
+        return false;
     }
     
     /**
