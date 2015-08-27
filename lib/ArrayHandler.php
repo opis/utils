@@ -107,7 +107,7 @@ class ArrayHandler implements ArrayAccess
      * @param   boolean $constraint (optional) Constraint
      */
     
-    public function put($path, $value, $constraint = false)
+    public function set($path, $value, $constraint = false)
     {
         if(is_null($path))
         {
@@ -183,7 +183,7 @@ class ArrayHandler implements ArrayAccess
     
     public function offsetSet($offset, $value)
     {
-        return $this->put($offset, $value, $this->constraint);
+        return $this->set($offset, $value, $this->constraint);
     }
 
     /**
