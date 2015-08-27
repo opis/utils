@@ -21,8 +21,9 @@
 namespace Opis\Utils;
 
 use ArrayAccess;
+use Serializable;
 
-class ArrayHandler implements ArrayAccess
+class ArrayHandler implements ArrayAccess, Serializable
 {
     /** @var    array   The array */
     protected $item;
@@ -225,6 +226,36 @@ class ArrayHandler implements ArrayAccess
     public function offsetGet($offset)
     {
         return $this->get($offset);
+    }
+    
+    /**
+     * Method inherited from Serializable
+     *
+     * @access  public
+     */
+    
+    public function serialize()
+    {
+        return serialize(array(
+            'item' => $this->item,
+            'separator' => $this->separator,
+            'constraint' => $this->constraint,
+        ));
+    }
+    
+    /**
+     * Method inherited from Serializable
+     *
+     * @access  public
+     */
+    
+    public function unserialize($data)
+    {
+        $data = unserialize($data);
+        
+        $this->item = $data['item'];
+        $this->separator = $data['separator'];
+        $this->constraint = $data['constraint'];
     }
     
     /**
