@@ -160,6 +160,74 @@ class ArrayHandler
     }
     
     /**
+     * Check if the value stored under the specified path is a string
+     *
+     * @access  public
+     *
+     * @param   string  $path   The path to check
+     *
+     * @return  boolean
+     */
+    
+    public function isString($path)
+    {
+        $value = $this->get($path, $this);
+        
+        return $value === $this ? false : is_string($value);
+    }
+    
+    /**
+     * Check if the value stored under the specified path is a number
+     *
+     * @access  public
+     *
+     * @param   string  $path   The path to check
+     *
+     * @return  boolean
+     */
+    
+    public function isNumber($path)
+    {
+        $value = $this->get($path, $this);
+        
+        return $value === $this ? false : is_numeric($value);
+    }
+    
+    /**
+     * Check if the value stored under the specified path is a `null` value
+     *
+     * @access  public
+     *
+     * @param   string  $path   The path to check
+     *
+     * @return  boolean
+     */
+    
+    public function isNull($path)
+    {
+        $value = $this->get($path, $this);
+        
+        return $value === $this ? false : is_null($value);
+    }
+    
+    /**
+     * Check if the value stored under the specified path is a boolean value
+     *
+     * @access  public
+     *
+     * @param   string  $path   The path to check
+     *
+     * @return  boolean
+     */
+    
+    public function isBoolean($path)
+    {
+        $value = $this->get($path, $this);
+        
+        return $value === $this ? false : is_bool($value);
+    }
+    
+    /**
      * Get the current array
      *
      * @return  array
