@@ -24,10 +24,10 @@ class Mutex
 {
     /** @var    resource    File resource */
     protected $fp;
-    
+
     /** @var    string      File path */
     protected $file;
-    
+
     /**
      * Constructor
      *
@@ -36,78 +36,68 @@ class Mutex
      * @param   string  $file   (optional) File path
      * @param   boolean $create (optional) Create flag
      */
-    
     public function __construct($file = null, $create = false)
     {
-        if($file === null)
-        {
+        if ($file === null) {
             $file = __FILE__;
         }
-        
-        if($create && !file_exists($file))
-        {
+
+        if ($create && !file_exists($file)) {
             file_put_contents($file, '');
         }
-        
+
         $this->file = $file;
     }
-    
+
     /**
      * Get the standard mutex implementation
      *
      * @return  \Opis\Utils\Mutex
      */
-    
     public static function standard()
     {
         static $instance;
-        
-        if($instance === null)
-        {
+
+        if ($instance === null) {
             $instance = new static();
         }
-        
+
         return $instance;
     }
-    
+
     /**
      * Aquire the mutex
      *
      * @return  boolean
      */
-    
     public function lock()
     {
-        if($this->fp === null)
-        {
+        if ($this->fp === null) {
             $this->fp = fopen($this->file, 'r');
         }
-        
+
         return flock($this->fp, LOCK_EX);
     }
-    
+
     /**
      * Realese the mutex
      *
      * @return  boolean
      */
-    
     public function unlock()
     {
-        if($this->fp !== null)
-        {
+        if ($this->fp !== null) {
             flock($this->fp, LOCK_UN);
             fclose($this->fp);
             $this->fp = null;
         }
-        
+
         return true;
     }
-    
+
     /**
      * Destructor
      */
-    
     public function __destruct()
     {
         $this->unlock();

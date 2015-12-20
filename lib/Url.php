@@ -22,10 +22,9 @@ namespace Opis\Utils;
 
 class Url
 {
-
     const URI_REGEX = '`^(?P<scheme>([^:/?#]+):)?(?P<authority>//([^/?#]*))?(?P<path>[^?#]*)(?P<query>\?([^#]*))?(?P<fragment>#(.*))?`';
     const AUTHORITY_REGEX = '`^//((?P<host>[^/?#:]+))?(:(?P<port>[0-9]+))?`';
-    
+
     protected static $empty = array(
         'scheme' => '',
         'authority' => '',
@@ -33,99 +32,85 @@ class Url
         'query' => '',
         'fragment' => '',
     );
-    
     protected $url;
     protected $components;
     protected $authority;
-    
+
     protected function __construct(array $components)
     {
         $this->components = $components;
     }
-    
+
     protected function &getAuthority()
     {
-        if($this->authority === null)
-        {
+        if ($this->authority === null) {
             $this->authority = array();
             $result = array();
-            
-            if(preg_match(static::AUTHORITY_REGEX, $this->components['authority'], $result))
-            {
-                if(isset($result['host']))
-                {
+
+            if (preg_match(static::AUTHORITY_REGEX, $this->components['authority'], $result)) {
+                if (isset($result['host'])) {
                     $this->authority['host'] = $result['host'];
                 }
-                
-                if(isset($result['port']))
-                {
+
+                if (isset($result['port'])) {
                     $this->authority['port'] = $result['port'];
                 }
             }
         }
-        
+
         return $this->authority;
     }
-    
+
     public function __get($value)
     {
-        if(isset($this->components[$value]))
-        {
+        if (isset($this->components[$value])) {
             return $this->components[$value];
-        }
-        else
-        {
+        } else {
             $authority = &$this->getAuthority();
-            
-            if (isset($authority[$value]))
-            {
+
+            if (isset($authority[$value])) {
                 return $authority[$value];
             }
         }
-        
-        return  null;
+
+        return null;
     }
-    
+
     public function __toString()
     {
-        if($this->url === null)
-        {
+        if ($this->url === null) {
             $c = $this->components;
-            
-            if($c['authority'] && null !== $host = $this->host)
-            {
+
+            if ($c['authority'] && null !== $host = $this->host) {
                 $port = $this->port;
                 $authority = '//' . Punycode::encode($host) . ($port === null ? '' : ':' . $port);
                 $c['authority'] = $authority;
             }
-            
+
             $this->url = implode('', $c);
         }
-        
+
         return $this->url;
     }
-    
+
     protected static function merge(Url $base, $path)
     {
-        if (!$base->components['path'])
-        {
+        if (!$base->components['path']) {
             return '/' . $base;
         }
-        
+
         $paths = explode('/', $base->components['path']);
         $paths[count($paths) - 1] = $path;
         return implode('/', $paths);
     }
-    
+
     protected static function removeDotSegments($path)
     {
         $stack = array();
         $input = explode('/', $path);
-        
-        foreach($input as $i)
-        {
-            switch($i)
-            {
+
+        foreach ($input as $i) {
+            switch ($i) {
                 case '.':
                     continue;
                 case '..':
@@ -135,102 +120,82 @@ class Url
                     array_push($stack, $i);
             }
         }
-        
+
         return implode('/', $stack);
     }
-    
+
     public static function components($url)
     {
         preg_match(static::URI_REGEX, $url, $match);
-        
-        foreach($match as $key => $value)
-        {
-            if (!is_integer($key))
-            {
+
+        foreach ($match as $key => $value) {
+            if (!is_integer($key)) {
                 $components[$key] = $value;
             }
         }
-        
+
         $components += static::$empty;
-        
+
         return $components;
     }
-    
+
     public static function parse($url)
     {
-        if ($url instanceof Url)
-        {
+        if ($url instanceof Url) {
             return $url;
         }
-        
+
         return new static(static::components($url));
     }
-    
+
     public static function compose($base, $relative)
     {
         $b = static::parse($base);
         $r = static::parse($relative);
         $t = new static(static::$empty);
-        
-        if($b->components['scheme'] === $r->components['scheme'])
-        {
+
+        if ($b->components['scheme'] === $r->components['scheme']) {
             $r->components['scheme'] = '';
         }
-        
-        if($r->components['scheme'])
-        {
+
+        if ($r->components['scheme']) {
             $t->components['scheme'] = $r->components['scheme'];
             $t->components['authority'] = $r->components['authority'];
             $t->components['path'] = static::removeDotSegments($r->components['path']);
             $t->components['query'] = $r->components['query'];
-        }
-        else
-        {
-            if($r->components['authority'])
-            {
+        } else {
+            if ($r->components['authority']) {
                 $t->components['authority'] = $r->components['authority'];
                 $t->components['path'] = static::removeDotSegments($r->components['path']);
                 $t->components['query'] = $r->components['query'];
-            }
-            else
-            {
-                if(!$r->components['path'])
-                {
+            } else {
+                if (!$r->components['path']) {
                     $t->components['path'] = $b->components['path'];
-                    
-                    if($r->components['query'])
-                    {
+
+                    if ($r->components['query']) {
                         $t->components['query'] = $r->components['query'];
-                    }
-                    else
-                    {
+                    } else {
                         $t->components['query'] = $b->components['query'];
                     }
-                }
-                else
-                {
-                    if($r->components['path'][0] == '/')
-                    {
+                } else {
+                    if ($r->components['path'][0] == '/') {
                         $t->components['path'] = static::removeDotSegments($r->components['path']);
-                    }
-                    else
-                    {
+                    } else {
                         $t->components['path'] = static::merge($b, $r->components['path']);
                         $t->components['path'] = static::removeDotSegments($t->components['path']);
                     }
-                    
+
                     $t->components['query'] = $r->components['query'];
                 }
-                
+
                 $t->components['authority'] = $b->components['authority'];
             }
-            
+
             $t->components['scheme'] = $b->components['scheme'];
         }
-        
+
         $t->components['fragment'] = $r->components['fragment'];
-        
+
         return $t;
     }
-
 }

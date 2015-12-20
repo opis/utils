@@ -20,124 +20,100 @@
 
 namespace Opis\Utils;
 
-
 class ClassLoader
 {
-    protected static $directories;
-    
-    protected static $aliases = array();
-    
-    protected static $classes = array();
-    
-    protected static $namespaces = array();
+    protected $directories;
+    protected $aliases = array();
+    protected $classes = array();
+    protected $namespaces = array();
 
-    protected function __construct()
+    public function __construct(array $directories = array(), $preload = false)
     {
-        
+        $this->directories = $directories;
+        spl_autoload_register(array($this, 'load'), true, $preload);
     }
 
-    public static function directory($path)
+    public function directory($path)
     {
         $path = rtrim($path);
-        
-        if (!in_array($path, self::$directories))
-        {
-            self::$directories[] = $path;
+
+        if (!in_array($path, $this->directories)) {
+            $this->directories[] = $path;
         }
     }
 
-    public static function registerNamespace($namespace, $path)
+    public function registerNamespace($namespace, $path)
     {
-        self::$namespaces[trim($namespace, '\\') . '\\'] = rtrim($path, '/');
+        $this->namespaces[trim($namespace, '\\') . '\\'] = rtrim($path, '/');
     }
 
-    public static function alias($alias, $class)
+    public function alias($alias, $class)
     {
-        self::$aliases[$alias] = $class;
-    }
-    
-    public static function aliases(array $aliases)
-    {
-        self::$aliases = array_merge(self::$aliases, $aliases);
+        $this->aliases[$alias] = $class;
     }
 
-    public static function mapClass($class, $path)
+    public function aliases(array $aliases)
     {
-        self::$classes[$class] = $path;
+        $this->aliases = array_merge($this->aliases, $aliases);
     }
 
-    public static function mapClasses(array $classes)
+    public function mapClass($class, $path)
     {
-        self::$classes = array_merge(self::$classes, $classes);
+        $this->classes[$class] = $path;
     }
 
-    public static function init(array $dirs = array(), $preload = false)
+    public function mapClasses(array $classes)
     {
-        self::$directories = $dirs;
-        spl_autoload_register(__CLASS__ . '::load', true, $preload);
+        $this->classes = array_merge($this->classes, $classes);
     }
 
-    public static function load($class)
+    public function load($class)
     {
         $class = ltrim($class, '\\');
-        
-        if (isset(self::$aliases[$class]))
-        {
-            return class_alias(self::$aliases[$class], $class);
-        }
-        elseif(isset(self::$classes[$class]))
-        {
-            include self::$classes[$class];
-            return TRUE;
+
+        if (isset($this->aliases[$class])) {
+            return class_alias($this->aliases[$class], $class);
+        } elseif (isset($this->classes[$class])) {
+            include $this->classes[$class];
+            return true;
         }
 
-        foreach(self::$namespaces as $ns => &$path)
-        {
-            if(strpos($class, $ns) === 0 && self::loadPSR0(substr($class, strlen($ns)), $path))
-            {
+        foreach ($this->namespaces as $ns => &$path) {
+            if (strpos($class, $ns) === 0 && $this->loadPSR0(substr($class, strlen($ns)), $path)) {
                 return true;
             }
         }
-        
-        return self::loadPSR0($class) || self::loadPSR0(strtolower($class));
-    }
-    
 
-    protected static function loadPSR0($class, $dir = NULL)
+        return $this->loadPSR0($class) || $this->loadPSR0(strtolower($class));
+    }
+
+    protected function loadPSR0($class, $dir = null)
     {
         $path = '';
 
-        if(($pos = strripos($class, '\\')) !== FALSE)
-        {
+        if (($pos = strripos($class, '\\')) !== false) {
             $path = str_replace('\\', '/', substr($class, 0, $pos)) . '/';
             $class = substr($class, $pos + 1);
         }
 
         $path .= str_replace('_', '/', $class) . '.php';
-        
-        if ($dir === NULL)
-        {
-            foreach (self::$directories as $dir)
-            {
+
+        if ($dir === null) {
+            foreach ($this->directories as $dir) {
                 $dir .= '/' . $path;
-                
-                if (file_exists($dir))
-                {
+
+                if (file_exists($dir)) {
                     include $dir;
-                    return TRUE;
+                    return true;
                 }
             }
-        }
-        else
-        {
+        } else {
             $dir .= '/' . $path;
-            if (file_exists($dir))
-            {
+            if (file_exists($dir)) {
                 include $dir;
-                return TRUE;
+                return true;
             }
         }
-        
-        return FALSE;
+        return false;
     }
 }

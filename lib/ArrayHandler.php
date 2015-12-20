@@ -27,13 +27,13 @@ class ArrayHandler implements ArrayAccess, Serializable
 {
     /** @var    array   The array */
     protected $item;
-    
+
     /** @var    boolean Default constraint */
     protected $constraint;
-    
+
     /** @var    string  Path separator */
     protected $separator;
-    
+
     /**
      * Constructor
      *
@@ -42,21 +42,19 @@ class ArrayHandler implements ArrayAccess, Serializable
      * @param   array   $array      (optional) The array
      * @param   boolean $constraint (optional) Constraint
      */
-    
     public function __construct(array $array = array(), $constraint = false, $separator = '.')
     {
         $constraint = (bool) $constraint;
-        
-        if($constraint)
-        {
+
+        if ($constraint) {
             $array = json_decode(json_encode($array), true);
         }
-        
+
         $this->item = $array;
         $this->separator = $separator;
         $this->constraint = $constraint;
     }
-    
+
     /**
      * Get the value stored under the specified path
      *
@@ -67,25 +65,22 @@ class ArrayHandler implements ArrayAccess, Serializable
      *
      * @return  mixed
      */
-    
     public function get($path, $default = null)
     {
         $path = explode($this->separator, $path);
         $item = &$this->item;
-        
-        foreach($path as $key)
-        {
-            if(!is_array($item[$key]) || !isset($item[$key]))
-            {
+
+        foreach ($path as $key) {
+            if (!is_array($item[$key]) || !isset($item[$key])) {
                 return $default;
             }
-            
+
             $item = &$item[$key];
         }
-        
+
         return $item;
     }
-    
+
     /**
      * Check if a path exists
      *
@@ -95,12 +90,11 @@ class ArrayHandler implements ArrayAccess, Serializable
      *
      * @return  boolean
      */
-    
     public function has($path)
     {
         return $this !== $this->get($path, $this);
     }
-    
+
     /**
      * Store a value
      *
@@ -110,43 +104,36 @@ class ArrayHandler implements ArrayAccess, Serializable
      * @param   mixed   $value      The value being stored
      * @param   boolean $constraint (optional) Constraint
      */
-    
     public function set($path, $value, $constraint = null)
     {
-        if($constraint === null)
-        {
+        if ($constraint === null) {
             $constraint = $this->constraint;
         }
-        
-        if($constraint)
-        {
+
+        if ($constraint) {
             $value = json_decode(json_encode($value), true);
         }
-        
-        if(is_null($path))
-        {
+
+        if (is_null($path)) {
             $this->item[] = $value;
             return;
         }
-        
+
         $path = explode($this->separator, $path);
         $last = array_pop($path);
         $item = &$this->item;
-        
-        foreach($path as $key)
-        {
-            if(!isset($item[$key]) || !is_array($item[$key]))
-            {
+
+        foreach ($path as $key) {
+            if (!isset($item[$key]) || !is_array($item[$key])) {
                 $item[$key] = array();
             }
-            
+
             $item = &$item[$key];
         }
-        
+
         $item[$last] = $value;
-        
     }
-    
+
     /**
      * Remove a path
      *
@@ -156,40 +143,35 @@ class ArrayHandler implements ArrayAccess, Serializable
      * 
      * @return  boolean
      */
-    
     public function remove($path)
     {
         $path = explode($this->separator, $path);
         $last = array_pop($path);
-        
+
         $item = &$this->item;
-        
-        foreach($path as $key)
-        {
-            if(isset($item[$key]))
-            {
+
+        foreach ($path as $key) {
+            if (isset($item[$key])) {
                 $item = &$item[$key];
                 continue;
             }
-            
+
             return false;
         }
-        
-        if(is_array($item[$last]) || isset($item[$last]))
-        {
+
+        if (is_array($item[$last]) || isset($item[$last])) {
             unset($item[$last]);
             return true;
         }
-        
+
         return false;
     }
-    
+
     /**
      * Method inherited from ArrayAccess
      *
      * @access  public
      */
-    
     public function offsetSet($offset, $value)
     {
         return $this->set($offset, $value);
@@ -200,7 +182,6 @@ class ArrayHandler implements ArrayAccess, Serializable
      *
      * @access  public
      */
-    
     public function offsetExists($offset)
     {
         return $this->has($offset);
@@ -211,7 +192,6 @@ class ArrayHandler implements ArrayAccess, Serializable
      *
      * @access  public
      */
-    
     public function offsetUnset($offset)
     {
         return $this->remove($offset);
@@ -222,18 +202,16 @@ class ArrayHandler implements ArrayAccess, Serializable
      *
      * @access  public
      */
-        
     public function offsetGet($offset)
     {
         return $this->get($offset);
     }
-    
+
     /**
      * Method inherited from Serializable
      *
      * @access  public
      */
-    
     public function serialize()
     {
         return serialize(array(
@@ -242,22 +220,21 @@ class ArrayHandler implements ArrayAccess, Serializable
             'constraint' => $this->constraint,
         ));
     }
-    
+
     /**
      * Method inherited from Serializable
      *
      * @access  public
      */
-    
     public function unserialize($data)
     {
         $data = unserialize($data);
-        
+
         $this->item = $data['item'];
         $this->separator = $data['separator'];
         $this->constraint = $data['constraint'];
     }
-    
+
     /**
      * Check if the value stored under the specified path is a JSON array
      *
@@ -267,19 +244,17 @@ class ArrayHandler implements ArrayAccess, Serializable
      *
      * @return  boolean
      */
-    
     public function isArray($path)
     {
         $value = $this->get($path, $this);
-        
-        if($value === $this || !is_array($value))
-        {
+
+        if ($value === $this || !is_array($value)) {
             return false;
         }
-        
+
         return array_keys($value) === range(0, count($value) - 1);
     }
-    
+
     /**
      * Check if the value stored under the specified path is a JSON object
      *
@@ -289,19 +264,17 @@ class ArrayHandler implements ArrayAccess, Serializable
      *
      * @return  boolean
      */
-    
     public function isObject($path)
     {
         $value = $this->get($path, $this);
-        
-        if($value === $this || !is_array($value))
-        {
+
+        if ($value === $this || !is_array($value)) {
             return false;
         }
-        
+
         return array_keys($value) !== range(0, count($value) - 1);
     }
-    
+
     /**
      * Check if the value stored under the specified path is a string
      *
@@ -311,14 +284,13 @@ class ArrayHandler implements ArrayAccess, Serializable
      *
      * @return  boolean
      */
-    
     public function isString($path)
     {
         $value = $this->get($path, $this);
-        
+
         return $value === $this ? false : is_string($value);
     }
-    
+
     /**
      * Check if the value stored under the specified path is a number
      *
@@ -328,14 +300,13 @@ class ArrayHandler implements ArrayAccess, Serializable
      *
      * @return  boolean
      */
-    
     public function isNumber($path)
     {
         $value = $this->get($path, $this);
-        
+
         return $value === $this ? false : is_numeric($value);
     }
-    
+
     /**
      * Check if the value stored under the specified path is a `null` value
      *
@@ -345,14 +316,13 @@ class ArrayHandler implements ArrayAccess, Serializable
      *
      * @return  boolean
      */
-    
     public function isNull($path)
     {
         $value = $this->get($path, $this);
-        
+
         return $value === $this ? false : is_null($value);
     }
-    
+
     /**
      * Check if the value stored under the specified path is a boolean value
      *
@@ -362,25 +332,23 @@ class ArrayHandler implements ArrayAccess, Serializable
      *
      * @return  boolean
      */
-    
     public function isBoolean($path)
     {
         $value = $this->get($path, $this);
-        
+
         return $value === $this ? false : is_bool($value);
     }
-    
+
     /**
      * Get the current array
      *
      * @return  array
      */
-    
     public function toArray()
     {
         return $this->item;
     }
-    
+
     /**
      * Get the JSON representation of the current array
      *
@@ -388,10 +356,8 @@ class ArrayHandler implements ArrayAccess, Serializable
      *
      * @return  string
      */
-    
     public function toJSON()
     {
         return json_encode($this->toArray());
     }
-    
 }
