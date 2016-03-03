@@ -22,7 +22,7 @@ namespace Opis\Utils;
 
 class Url
 {
-    const URI_REGEX = '`^(?P<scheme>([^:/?#]+):)?(?P<authority>//([^/?#]*))?(?P<path>[^?#]*)(?P<query>\?([^#]*))?(?P<fragment>#(.*))?`';
+    const URI_REGEX = '`^((?P<scheme>[^:/?#]+):)?(?P<authority>//([^/?#]*))?(?P<path>[^?#]*)(?P<query>\?([^#]*))?(?P<fragment>#(.*))?`';
     const AUTHORITY_REGEX = '`^//((?P<host>[^/?#:]+))?(:(?P<port>[0-9]+))?`';
 
     protected static $empty = array(
