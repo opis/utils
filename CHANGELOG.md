@@ -1,3 +1,9 @@
+CHANGELOG
+-------------
+### v2.0.1, 2016.03.03
+
+* Fixed a bug in `Opis\Utils\Url::URI_REGEX`
+
 ### v2.0.0, 2015.12.20
 
 * Added `Opis\Utils\Placeholder` class
