@@ -1,5 +1,6 @@
 Opis Utils
-=========
+==========
+[![Build Status](https://travis-ci.org/opis/utils.svg?branch=master)](https://travis-ci.org/opis/utils)
 [![Latest Stable Version](https://poser.pugx.org/opis/utils/version.png)](https://packagist.org/packages/opis/utils)
 [![Latest Unstable Version](https://poser.pugx.org/opis/utils/v/unstable.png)](//packagist.org/packages/opis/utils)
 [![License](https://poser.pugx.org/opis/utils/license.png)](https://packagist.org/packages/opis/utils)
