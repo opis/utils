@@ -302,24 +302,34 @@ class Validator
         return $this->push(call_user_func_array($this->registred[$name], $arguments));
     }
 
-    public function validate($field, $value)
+    public function validate($field, $value, $callback = null)
     {
+        $key = null;
+        
+        if (is_array($field)) {
+            $key = key($field);
+            $field = current($field);
+        }
+        
         while (!empty($this->stack)) {
             $item = array_shift($this->stack);
             $arguments = $item['validator']['arguments'];
             array_unshift($arguments, $value);
-
-
+            
             if (false === call_user_func_array($item['validator']['callback'], $arguments)) {
                 $error = $item['error'];
                 $error['variables']['@field'] = $field;
-                $this->errors[] = $this->placeholder->replace($error['text'], $error['variables']);
+                if ($key === null) {
+                    $this->errors[] = $this->placeholder->replace($error['text'], $error['variables']);
+                } else {
+                    $this->errors[$key] = $this->placeholder->replace($error['text'], $error['variables']);
+                }
                 $this->stack = array();
                 break;
             }
         }
-
-        return $value;
+        
+        return is_callable($callback) ? $callback($value) : $value;
     }
 
     public function hasErrors()
