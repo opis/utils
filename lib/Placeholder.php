@@ -45,19 +45,20 @@ class Placeholder
      * 
      * @param   type    $text
      * @param   array   $placeholders
+     * @param   boolean $escape         (optional)
      * 
      * @return  string
      */
-    public function replace($text, array $placeholders)
+    public function replace($text, array $placeholders, $escape = false)
     {
         $args = array();
-
+        print_r(func_get_args());
         foreach ($placeholders as $key => $value) {
             $l = $key[0];
             if ($l == $this->escape) {
                 $args[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
             } elseif ($l == $this->plain) {
-                $args[$key] = $value;
+                $args[$key] = $escape ? htmlspecialchars($value, ENT_QUOTES, 'UTF-8') : $value;
             }
         }
 
