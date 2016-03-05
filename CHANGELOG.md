@@ -1,5 +1,11 @@
 CHANGELOG
 -------------
+### v2.1.0, 2016.03.05
+
+* Added unit testing support
+* Modified `Opis\Utils\Validator::validate` method
+* Modified `Opis\Utils\Placeholder::replace` method
+
 ### v2.0.1, 2016.03.03
 
 * Fixed a bug in `Opis\Utils\Url::URI_REGEX`
