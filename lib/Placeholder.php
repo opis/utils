@@ -49,16 +49,16 @@ class Placeholder
      * 
      * @return  string
      */
-    public function replace($text, array $placeholders, $escape = false)
+    public function replace($text, array $placeholders, $escape = true)
     {
         $args = array();
-        print_r(func_get_args());
+        
         foreach ($placeholders as $key => $value) {
             $l = $key[0];
             if ($l == $this->escape) {
-                $args[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-            } elseif ($l == $this->plain) {
                 $args[$key] = $escape ? htmlspecialchars($value, ENT_QUOTES, 'UTF-8') : $value;
+            } elseif ($l == $this->plain) {
+                $args[$key] = $value;
             }
         }
 
