@@ -1,5 +1,9 @@
 CHANGELOG
 -------------
+### v2.2.0, 2016.03.09
+
+* Added `Opis\Utils\Dir` class
+
 ### v2.1.0, 2016.03.05
 
 * Added unit testing support
