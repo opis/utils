@@ -69,15 +69,20 @@ class ArrayHandler implements ArrayAccess, Serializable
     {
         $path = explode($this->separator, $path);
         $item = &$this->item;
-
+        
         foreach ($path as $key) {
-            if (!isset($item[$key]) || !is_array($item[$key])) {
+            
+            if (!is_array($item)) {
                 return $default;
             }
-
+            
+            if (!array_key_exists($key, $item)) {
+                return $default;
+            }
+            
             $item = &$item[$key];
         }
-
+        
         return $item;
     }
 
@@ -124,7 +129,7 @@ class ArrayHandler implements ArrayAccess, Serializable
         $item = &$this->item;
 
         foreach ($path as $key) {
-            if (!isset($item[$key]) || !is_array($item[$key])) {
+            if (!array_key_exists($key, $item) || !is_array($item[$key])) {
                 $item[$key] = array();
             }
 
@@ -151,15 +156,14 @@ class ArrayHandler implements ArrayAccess, Serializable
         $item = &$this->item;
 
         foreach ($path as $key) {
-            if (isset($item[$key])) {
+            if (array_key_exists($key, $item) && is_array($item[$key])) {
                 $item = &$item[$key];
                 continue;
             }
-
             return false;
         }
-
-        if (is_array($item[$last]) || isset($item[$last])) {
+        
+        if (array_key_exists($last, $item)) {
             unset($item[$last]);
             return true;
         }
