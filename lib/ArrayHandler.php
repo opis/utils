@@ -71,7 +71,7 @@ class ArrayHandler implements ArrayAccess, Serializable
         $item = &$this->item;
 
         foreach ($path as $key) {
-            if (!is_array($item[$key]) || !isset($item[$key])) {
+            if (!isset($item[$key]) || !is_array($item[$key])) {
                 return $default;
             }
 
