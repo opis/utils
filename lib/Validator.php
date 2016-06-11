@@ -261,7 +261,7 @@ class Validator
         return $this->push(array(
                 'validator' => array(
                     'callback' => array($this, 'validate' . ucfirst(__FUNCTION__)),
-                    'arguments' => array(),
+                    'arguments' => array($type),
                 ),
                 'error' => array(
                     'text' => $error,
