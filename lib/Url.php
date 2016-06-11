@@ -36,11 +36,18 @@ class Url
     protected $components;
     protected $authority;
 
+    /**
+     * Url constructor.
+     * @param array $components
+     */
     protected function __construct(array $components)
     {
         $this->components = $components;
     }
 
+    /**
+     * @return array
+     */
     protected function &getAuthority()
     {
         if ($this->authority === null) {
@@ -61,6 +68,10 @@ class Url
         return $this->authority;
     }
 
+    /**
+     * @param $value
+     * @return mixed|null
+     */
     public function __get($value)
     {
         if (isset($this->components[$value])) {
@@ -76,6 +87,9 @@ class Url
         return null;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         if ($this->url === null) {
@@ -93,6 +107,11 @@ class Url
         return $this->url;
     }
 
+    /**
+     * @param Url $base
+     * @param string $path
+     * @return string
+     */
     protected static function merge(Url $base, $path)
     {
         if (!$base->components['path']) {
@@ -104,6 +123,10 @@ class Url
         return implode('/', $paths);
     }
 
+    /**
+     * @param string $path
+     * @return string
+     */
     protected static function removeDotSegments($path)
     {
         $stack = array();
@@ -124,6 +147,10 @@ class Url
         return implode('/', $stack);
     }
 
+    /**
+     * @param string $url
+     * @return array
+     */
     public static function components($url)
     {
         preg_match(static::URI_REGEX, $url, $match);
@@ -141,6 +168,10 @@ class Url
         return $components;
     }
 
+    /**
+     * @param string $url
+     * @return static
+     */
     public static function parse($url)
     {
         if ($url instanceof Url) {
@@ -150,6 +181,11 @@ class Url
         return new static(static::components($url));
     }
 
+    /**
+     * @param string $base
+     * @param string $relative
+     * @return static
+     */
     public static function compose($base, $relative)
     {
         $b = static::parse($base);
