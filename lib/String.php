@@ -56,13 +56,13 @@ class String implements ArrayAccess
                 $utf8[] = $cu1;
             } elseif ($cu1 < 0xC2) {
                 $hasErrors = true;
-                $utf8[] = UNICODE_REPLACEMENT_CODEPOINT; //$cu1 + 0xDC00;
+                $utf8[] = static::UNICODE_REPLACEMENT_CODEPOINT; //$cu1 + 0xDC00;
             } elseif ($cu1 < 0xE0) {
                 $cu2 = $codes[$bytes[$p++]];
 
                 if (($cu2 & 0xC0) != 0x80) {
                     $p--;
-                    $utf8[] = UNICODE_REPLACEMENT_CODEPOINT; //$cu1 + 0xDC00;
+                    $utf8[] = static::UNICODE_REPLACEMENT_CODEPOINT; //$cu1 + 0xDC00;
                     $hasErrors = true;
                     continue;
                 }
@@ -73,7 +73,7 @@ class String implements ArrayAccess
 
                 if ((($cu2 & 0xC0) != 0x80) || ($cu1 == 0xE0 && $cu2 < 0xA0)) {
                     $p--;
-                    $utf8[] = UNICODE_REPLACEMENT_CODEPOINT; //$cu1 + 0xDC00;
+                    $utf8[] = static::UNICODE_REPLACEMENT_CODEPOINT; //$cu1 + 0xDC00;
                     $hasErrors = true;
                     continue;
                 }
@@ -82,7 +82,7 @@ class String implements ArrayAccess
 
                 if (($cu3 & 0xC0) != 0x80) {
                     $p -= 2;
-                    $utf8[] = UNICODE_REPLACEMENT_CODEPOINT; //$cu1 + 0xDC00;
+                    $utf8[] = static::UNICODE_REPLACEMENT_CODEPOINT; //$cu1 + 0xDC00;
                     $hasErrors = true;
                     continue;
                 }
@@ -93,7 +93,7 @@ class String implements ArrayAccess
 
                 if ((($cu2 & 0xC0) != 0x80) || ($cu1 == 0xF0 && $cu2 < 0x90) || ($cu1 == 0xF4 && $cu2 >= 0x90)) {
                     $p--;
-                    $utf8[] = UNICODE_REPLACEMENT_CODEPOINT; //$cu1 + 0xDC00;
+                    $utf8[] = static::UNICODE_REPLACEMENT_CODEPOINT; //$cu1 + 0xDC00;
                     $hasErrors = true;
                     continue;
                 }
@@ -102,7 +102,7 @@ class String implements ArrayAccess
 
                 if (($cu3 & 0xC0) != 0x80) {
                     $p -= 2;
-                    $utf8[] = UNICODE_REPLACEMENT_CODEPOINT; //$cu1 + 0xDC00;
+                    $utf8[] = static::UNICODE_REPLACEMENT_CODEPOINT; //$cu1 + 0xDC00;
                     $hasErrors = true;
                     continue;
                 }
@@ -111,14 +111,14 @@ class String implements ArrayAccess
 
                 if (($cu4 & 0xC0) != 0x80) {
                     $p -= 3;
-                    $utf8[] = UNICODE_REPLACEMENT_CODEPOINT; //$cu1 + 0xDC00;
+                    $utf8[] = static::UNICODE_REPLACEMENT_CODEPOINT; //$cu1 + 0xDC00;
                     $hasErrors = true;
                     continue;
                 }
 
                 $utf8[] = ($cu1 << 18) + ($cu2 << 12) + ($cu3 << 6) + $cu4 - 0x3C82080;
             } else {
-                $utf8[] = UNICODE_REPLACEMENT_CODEPOINT; //$cu1 + 0xDC00;
+                $utf8[] = static::UNICODE_REPLACEMENT_CODEPOINT; //$cu1 + 0xDC00;
                 $hasErrors = true;
             }
         } while ($p < $l);
@@ -309,7 +309,7 @@ class String implements ArrayAccess
     public function indexOf($text, $start = 0)
     {
         if (!$text instanceof static) {
-            $text = new UTF8String((string) $text);
+            $text = new static((string) $text);
         }
 
         $start = (int) $start;

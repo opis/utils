@@ -176,6 +176,7 @@ class Punycode
      *
      * @param string $input Part of a domain name
      * @return string Unicode domain part
+     * @throws Exception
      */
     protected static function decodePart($input)
     {

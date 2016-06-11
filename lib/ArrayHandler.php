@@ -39,8 +39,9 @@ class ArrayHandler implements ArrayAccess, Serializable
      *
      * @access  public
      *
-     * @param   array   $array      (optional) The array
+     * @param   array $array (optional) The array
      * @param   boolean $constraint (optional) Constraint
+     * @param string $separator
      */
     public function __construct(array $array = array(), $constraint = false, $separator = '.')
     {
@@ -175,6 +176,8 @@ class ArrayHandler implements ArrayAccess, Serializable
      * Method inherited from ArrayAccess
      *
      * @access  public
+     * @param mixed $offset
+     * @param mixed $value
      */
     public function offsetSet($offset, $value)
     {
@@ -185,6 +188,8 @@ class ArrayHandler implements ArrayAccess, Serializable
      * Method inherited from ArrayAccess
      *
      * @access  public
+     * @param mixed $offset
+     * @return bool
      */
     public function offsetExists($offset)
     {
@@ -195,6 +200,8 @@ class ArrayHandler implements ArrayAccess, Serializable
      * Method inherited from ArrayAccess
      *
      * @access  public
+     * @param mixed $offset
+     * @return bool|void
      */
     public function offsetUnset($offset)
     {
@@ -205,6 +212,8 @@ class ArrayHandler implements ArrayAccess, Serializable
      * Method inherited from ArrayAccess
      *
      * @access  public
+     * @param mixed $offset
+     * @return mixed
      */
     public function offsetGet($offset)
     {
@@ -229,6 +238,7 @@ class ArrayHandler implements ArrayAccess, Serializable
      * Method inherited from Serializable
      *
      * @access  public
+     * @param string $data
      */
     public function unserialize($data)
     {

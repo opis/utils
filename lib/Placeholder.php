@@ -43,7 +43,7 @@ class Placeholder
     /**
      * Replace placeholders
      * 
-     * @param   type    $text
+     * @param   string    $text
      * @param   array   $placeholders
      * @param   boolean $escape         (optional)
      * 
