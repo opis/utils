@@ -36,6 +36,10 @@ class String implements ArrayAccess
     const UNICODE_REPLACEMENT_CODEPOINT = 0xFFFD;
     const UTF8_REPLACEMENT_CHARACTER = "\xEF\xBF\xBD";
 
+    /**
+     * String constructor.
+     * @param   string|null $bytes
+     */
     public function __construct($bytes)
     {
         if ($bytes === null) {
@@ -130,11 +134,17 @@ class String implements ArrayAccess
         }
     }
 
+    /**
+     * @return int
+     */
     public function length()
     {
         return $this->length;
     }
 
+    /**
+     * @return int
+     */
     public function byteLength()
     {
         if ($this->byteLength === null) {
@@ -144,11 +154,20 @@ class String implements ArrayAccess
         return $this->byteLength;
     }
 
+    /**
+     * @param mixed $index
+     * @return bool
+     */
     public function offsetExists($index)
     {
         return isset($this->codepoints[$index]);
     }
 
+    /**
+     * @param mixed $index
+     * @return mixed
+     * @throws Exception
+     */
     public function offsetGet($index)
     {
         $chars = &$this->chars;
@@ -173,26 +192,44 @@ class String implements ArrayAccess
         return $chars[$index];
     }
 
+    /**
+     * @param mixed $index
+     * @param mixed $value
+     */
     public function offsetSet($index, $value)
     {
         
     }
 
+    /**
+     * @param mixed $index
+     */
     public function offsetUnset($index)
     {
         
     }
 
+    /**
+     * @param $index
+     * @return int
+     */
     public function __invoke($index)
     {
         return $this->codepoints[$index];
     }
 
+    /**
+     * @return array
+     */
     public function &getCodePoints()
     {
         return $this->codepoints;
     }
 
+    /**
+     * @return null|string
+     * @throws Exception
+     */
     public function __toString()
     {
         if ($this->str === null) {
@@ -206,11 +243,21 @@ class String implements ArrayAccess
         return $this->str;
     }
 
+    /**
+     * @param $start
+     * @param int|null $length
+     * @return static
+     */
     public function substr($start, $length = null)
     {
         return $this->substring($start, $length);
     }
 
+    /**
+     * @param $start
+     * @param int|null $length
+     * @return static
+     */
     public function substring($start, $length = null)
     {
         $str = new static(null);
@@ -219,6 +266,10 @@ class String implements ArrayAccess
         return $str;
     }
 
+    /**
+     * @param string $character_mask
+     * @return static
+     */
     public function trim($character_mask = " \t\n\r\0\x0B")
     {
         if (!($character_mask instanceof static)) {
@@ -254,6 +305,10 @@ class String implements ArrayAccess
         return $str;
     }
 
+    /**
+     * @param string $character_mask (optional)
+     * @return static
+     */
     public function ltrim($character_mask = " \t\n\r\0\x0B")
     {
         if (!($character_mask instanceof static)) {
@@ -280,6 +335,10 @@ class String implements ArrayAccess
         return $str;
     }
 
+    /**
+     * @param string $character_mask (optional)
+     * @return static
+     */
     public function rtrim($character_mask = " \t\n\r\0\x0B")
     {
         if (!($character_mask instanceof static)) {
@@ -306,6 +365,11 @@ class String implements ArrayAccess
         return $str;
     }
 
+    /**
+     * @param static|string $text
+     * @param int $start
+     * @return int
+     */
     public function indexOf($text, $start = 0)
     {
         if (!$text instanceof static) {
@@ -338,6 +402,11 @@ class String implements ArrayAccess
         return -1;
     }
 
+    /**
+     * @param string|static  $what
+     * @param string|static $with
+     * @return static
+     */
     public function replace($what, $with)
     {
         $what = (string) $what;
@@ -347,6 +416,10 @@ class String implements ArrayAccess
         return new static(str_replace($what, $with, $crt));
     }
 
+    /**
+     * @param string $separator
+     * @return array
+     */
     public function split($separator = ' ')
     {
         return array_map(function ($value) {
@@ -354,6 +427,9 @@ class String implements ArrayAccess
         }, explode($separator, (string) $this));
     }
 
+    /**
+     * @return static
+     */
     public function toUpper()
     {
         $cp = array_slice($this->codepoints, 0, $this->length);
@@ -441,6 +517,9 @@ class String implements ArrayAccess
         return $str;
     }
 
+    /**
+     * @return static
+     */
     public function toLower()
     {
         $cp = array_slice($this->codepoints, 0, $this->length);
@@ -528,11 +607,18 @@ class String implements ArrayAccess
         return $str;
     }
 
+    /**
+     * @param string $bytes
+     * @return static
+     */
     public static function create($bytes)
     {
         return new static((string) $bytes);
     }
 
+    /**
+     * @return array
+     */
     protected static function &getCodes()
     {
         if (static::$codes === null) {

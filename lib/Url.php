@@ -128,6 +128,8 @@ class Url
     {
         preg_match(static::URI_REGEX, $url, $match);
 
+        $components = array();
+        
         foreach ($match as $key => $value) {
             if (!is_integer($key)) {
                 $components[$key] = $value;

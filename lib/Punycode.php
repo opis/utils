@@ -224,7 +224,7 @@ class Punycode
             } elseif ($n <= 0xFFFF) {
                 $cp = chr(($n >> 12) + 0xE0) . chr((($n >> 6) & 0x3F) + 0x80) . chr(($n & 0x3F) + 0x80);
             } elseif ($n <= 0x10FFFF) {
-                $cp = chr(($n >> 18) + 0xF0) . $hr((($n >> 12) & 0x3F) + 0x80)
+                $cp = chr(($n >> 18) + 0xF0) . chr((($n >> 12) & 0x3F) + 0x80)
                     . chr((($n >> 6) & 0x3F) + 0x80) . chr(($n & 0x3F) + 0x80);
             } else {
                 throw new Exception("Invalid UTF-8");
@@ -419,7 +419,7 @@ class Punycode
             } elseif ($cp <= 0xFFFF) {
                 $output .= chr(($cp >> 12) + 0xE0) . chr((($cp >> 6) & 0x3F) + 0x80) . chr(($cp & 0x3F) + 0x80);
             } elseif ($cp <= 0x10FFFF) {
-                $output .= chr(($cp >> 18) + 0xF0) . $hr((($cp >> 12) & 0x3F) + 0x80)
+                $output .= chr(($cp >> 18) + 0xF0) . chr((($cp >> 12) & 0x3F) + 0x80)
                     . chr((($cp >> 6) & 0x3F) + 0x80) . chr(($cp & 0x3F) + 0x80);
             } else {
                 throw new Exception("Invalid UTF-8");
