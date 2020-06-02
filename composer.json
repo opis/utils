@@ -25,6 +25,11 @@
             "Opis\\Utils\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Opis\\Utils\\Test\\": "tests/"
+        }
+    },
     "config": {
         "preferred-install": "dist"
     },
