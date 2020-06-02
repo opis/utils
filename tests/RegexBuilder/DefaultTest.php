@@ -28,7 +28,7 @@ class DefaultTest extends TestCase
     /** @var RegexBuilder */
     private static $domainBuilder;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         self::$pathBuilder = new RegexBuilder();
         self::$domainBuilder = new RegexBuilder([

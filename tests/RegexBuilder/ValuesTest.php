@@ -25,7 +25,7 @@ class ValuesTest extends TestCase
     /** @var RegexBuilder */
     private static $builder;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         self::$builder = new RegexBuilder();
     }

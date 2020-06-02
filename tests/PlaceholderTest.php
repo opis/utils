@@ -8,7 +8,7 @@ class PlaceholderTest extends TestCase
 {
     protected $placeholder;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->placeholder = new Placeholder();
     }
