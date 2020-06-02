@@ -1,45 +1,41 @@
 Opis Utils
 ==========
-[![Build Status](https://travis-ci.org/opis/utils.svg?branch=master)](https://travis-ci.org/opis/utils)
+[![Tests](https://github.com/opis/utils/workflows/Tests/badge.svg)](https://github.com/opis/utils/actions)
 [![Latest Stable Version](https://poser.pugx.org/opis/utils/version.png)](https://packagist.org/packages/opis/utils)
 [![Latest Unstable Version](https://poser.pugx.org/opis/utils/v/unstable.png)](//packagist.org/packages/opis/utils)
 [![License](https://poser.pugx.org/opis/utils/license.png)](https://packagist.org/packages/opis/utils)
 
-Utilitary classes
+Useful classes
 --------------
-**Opis Utils** is a collection of useful classes that will help you
-with UTF 8 strings, URLs, form validators, autoloading, versions and others. 
+**Opis Utils** is a collection of useful classes 
 
-### License
+## License
 
-**Opis Utils** is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0). 
+**Opis Utils** is licensed under the [Apache License, Version 2.0][license]. 
 
-### Requirements
+## Requirements
 
-* PHP 5.3.* or higher
+* PHP ^7.4
 
-### Installation
+## Installation
 
-This library is available on [Packagist](https://packagist.org/packages/opis/utils) and can be installed using [Composer](http://getcomposer.org).
+**Opis Utils** is available on [Packagist] and it can be installed from a 
+command line interface by using [Composer]. 
+
+```bash
+composer require opis/utils
+```
+
+Or you could directly reference it into your `composer.json` file as a dependency
 
 ```json
 {
     "require": {
-        "opis/utils": "^2.2.0"
+        "opis/utils": "^2020"
     }
 }
 ```
 
-If you are unable to use [Composer](http://getcomposer.org) you can download the
-[tar.gz](https://github.com/opis/utils/archive/2.2.0.tar.gz) or the [zip](https://github.com/opis/utils/archive/2.2.0.zip)
-archive file, extract the content of the archive and include de `autoload.php` file into your project. 
-
-```php
-
-require_once 'path/to/utils-2.2.0/autoload.php';
-
-```
-
-### Documentation
-
-Examples and documentation can be found at http://opis.io/utils.
+[license]: https://www.apache.org/licenses/LICENSE-2.0 "Apache License"
+[Packagist]: https://packagist.org/packages/opis/database "Packagist"
+[Composer]: https://getcomposer.org "Composer"
