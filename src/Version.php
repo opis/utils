@@ -1,9 +1,6 @@
 <?php
 /* ===========================================================================
- * Opis Project
- * http://opis.io
- * ===========================================================================
- * Copyright 2015-2016 Marius Sarca
+ * Copyright 2018 Zindex Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +21,50 @@ class Version
 {
     protected static $mapFunction;
 
+    /**
+     * @param $version1
+     * @param $version2
+     * @param null $sign
+     * @return bool|int
+     */
+    public static function compare($version1, $version2, $sign = null)
+    {
+        $result = static::getResult($version1, $version2);
+
+        switch ($sign) {
+            case '=':
+                return $result === 0;
+            case '<':
+                return $result === -1;
+            case '<=':
+                return $result === -1 || $result === 0;
+            case '>':
+                return $result === 1;
+            case '>=':
+                return $result === 1 || $result === 0;
+            case '!=':
+            case '<>':
+                return $result !== 0;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $version1
+     * @param $version2
+     * @param string $replace
+     * @return bool
+     */
+    public static function match($version1, $version2, $replace = '*')
+    {
+        return 0 === static::getResult($version1, $version2, $replace);
+    }
+
+    /**
+     * @param $version
+     * @return string
+     */
     protected static function normalize($version)
     {
         $version = preg_replace('/[_\-+]+/', '.', $version);
@@ -35,6 +76,12 @@ class Version
         return strtolower(trim($version, '.'));
     }
 
+    /**
+     * @param $version1
+     * @param $version2
+     * @param int $replace
+     * @return int
+     */
     protected static function getResult($version1, $version2, $replace = 0)
     {
         $version1 = explode('.', static::normalize($version1));
@@ -58,7 +105,7 @@ class Version
         }
 
         if (static::$mapFunction === null) {
-            $map = array(
+            $map = [
                 'dev' => -6,
                 'alpha' => -5,
                 'a' => -5,
@@ -68,16 +115,16 @@ class Version
                 '#' => -2,
                 'pl' => -1,
                 'p' => -1,
-            );
+            ];
 
-            static::$mapFunction = function($value) use(&$map) {
+            static::$mapFunction = function ($value) use (&$map) {
 
                 if (isset($map[$value])) {
                     return $map[$value];
                 }
 
                 if (is_numeric($value)) {
-                    return (int) $value;
+                    return (int)$value;
                 }
 
                 return $value;
@@ -118,33 +165,5 @@ class Version
         }
 
         return 0;
-    }
-
-    public static function compare($version1, $version2, $sign = null)
-    {
-        $result = static::getResult($version1, $version2);
-
-        switch ($sign) {
-            case '=':
-                return $result === 0;
-            case '<':
-                return $result === -1;
-            case '<=':
-                return $result === -1 || $result === 0;
-            case '>':
-                return $result === 1;
-            case '>=':
-                return $result === 1 || $result === 0;
-            case '!=':
-            case '<>':
-                return $result !== 0;
-        }
-
-        return $result;
-    }
-
-    public static function match($version1, $version2, $replace = '*')
-    {
-        return 0 === static::getResult($version1, $version2, $replace);
     }
 }

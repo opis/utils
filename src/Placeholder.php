@@ -22,44 +22,12 @@ namespace Opis\Utils;
 
 class Placeholder
 {
-    /** @var    string */
-    protected $escape;
-
-    /** @var    string */
-    protected $plain;
-
-    /**
-     * Constructor
-     * 
-     * @param   string  $escape
-     * @param   string  $plain
-     */
-    public function __construct($escape = '@', $plain = '%')
+    public function replace(string $text, array $placeholders): string
     {
-        $this->escape = $escape;
-        $this->plain = $plain;
-    }
+        $args = [];
 
-    /**
-     * Replace placeholders
-     * 
-     * @param   string    $text
-     * @param   array   $placeholders
-     * @param   boolean $escape         (optional)
-     * 
-     * @return  string
-     */
-    public function replace($text, array $placeholders, $escape = true)
-    {
-        $args = array();
-        
         foreach ($placeholders as $key => $value) {
-            $l = $key[0];
-            if ($l == $this->escape) {
-                $args[$key] = $escape ? htmlspecialchars($value, ENT_QUOTES, 'UTF-8') : $value;
-            } elseif ($l == $this->plain) {
-                $args[$key] = $value;
-            }
+            $args['${' . $key . '}'] = $value;
         }
 
         return strtr($text, $args);

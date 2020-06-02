@@ -1,2 +1,7 @@
-/vendor/
+.idea/
+vendor/
+_site/
+shared/
+Gemfile.lock
 composer.lock
+.DS_Store

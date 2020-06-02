@@ -20,6 +20,8 @@
 
 namespace Opis\Utils;
 
+use http\Message\Body;
+
 class Dir
 {
 
@@ -31,15 +33,7 @@ class Dir
         // empty constructor
     }
 
-    /**
-     * Copy directory
-     * 
-     * @param   string  $source
-     * @param   string  $dest
-     * 
-     * @return  boolean
-     */
-    public static function copy($source, $dest)
+    public static function copy(string $source, string $dest): bool
     {
         if (is_link($source)) {
             return symlink(readlink($source), $dest);
@@ -63,6 +57,7 @@ class Dir
         }
 
         $dir->close();
+
         return true;
     }
 
@@ -73,7 +68,7 @@ class Dir
      * 
      * @return  boolean
      */
-    public static function remove($dirname)
+    public static function remove(string $dirname): bool
     {
         if (!is_dir($dirname)) {
             return false;

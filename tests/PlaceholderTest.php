@@ -1,7 +1,10 @@
 <?php
-use Opis\Utils\Placeholder;
+namespace Opis\Utils\Test;
 
-class PlaceholderTest extends PHPUnit_Framework_TestCase
+use Opis\Utils\Placeholder;
+use PHPUnit\Framework\TestCase;
+
+class PlaceholderTest extends TestCase
 {
     protected $placeholder;
 
@@ -10,28 +13,32 @@ class PlaceholderTest extends PHPUnit_Framework_TestCase
         $this->placeholder = new Placeholder();
     }
 
-    public function testBasicReplace1()
+    public function testBasicReplace()
     {
-        $this->assertEquals('Hello world', $this->placeholder->replace('Hello @foo', array('@foo' => 'world')));
+        $this->assertEquals('Hello world', $this->placeholder->replace('Hello ${foo}', [
+            'foo' => 'world'
+        ]));
     }
 
-    public function testBasicReplace2()
+    public function testReplaceMultiple()
     {
-        $this->assertEquals('Hello world', $this->placeholder->replace('Hello %foo', array('%foo' => 'world')));
+        $this->assertEquals('Hello world from world', $this->placeholder->replace('Hello ${foo} from ${foo}', [
+            'foo' => 'world'
+        ]));
     }
 
-    public function testBasicReplace3()
+    public function testReplaceMultipleDifferent()
     {
-        $this->assertEquals('Hello &lt;world&gt;', $this->placeholder->replace('Hello @foo', array('@foo' => '<world>')));
+        $this->assertEquals('Hello world from Opis', $this->placeholder->replace('Hello ${foo} from ${bar}', [
+            'foo' => 'world',
+            'bar' => 'Opis'
+        ]));
     }
 
-    public function testBasicReplace4()
+    public function testNotReplace()
     {
-        $this->assertEquals('Hello <world>', $this->placeholder->replace('Hello %foo', array('%foo' => '<world>')));
-    }
-
-    public function testBasicReplace5()
-    {
-        $this->assertEquals('Hello <world>', $this->placeholder->replace('Hello @foo', array('@foo' => '<world>'), false));
+        $this->assertEquals('Hello ${foo}', $this->placeholder->replace('Hello ${foo}', [
+            'bar' => 'world'
+        ]));
     }
 }

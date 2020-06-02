@@ -1,6 +1,9 @@
-Opis Utils
-Copyright 2015 Marius Sarca
+Opis Colibri
+Copyright 2020 Zindex Software
 
-This product contains a modified version of TrueServer B.V.'s `Punycode` class.
-    * License: license/LICENSE.punycode (MIT license)
-    * Homepage: https://github.com/true/php-punycode
+This product includes software developed at
+Zindex Software (http://zindex.software).
+
+This software was originally developed by Marius Sarca and Sorin Sarca
+(Copyright 2015-2020). The copyright info was changed with the permission
+of the original authors.

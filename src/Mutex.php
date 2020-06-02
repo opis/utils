@@ -1,9 +1,6 @@
 <?php
 /* ===========================================================================
- * Opis Project
- * http://opis.io
- * ===========================================================================
- * Copyright 2015-2016 Marius Sarca
+ * Copyright 2018 Zindex Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,21 +19,19 @@ namespace Opis\Utils;
 
 class Mutex
 {
-    /** @var    resource    File resource */
+    /** @var resource File resource */
     protected $fp;
 
-    /** @var    string      File path */
+    /** @var string File path */
     protected $file;
 
     /**
-     * Constructor
+     * Mutex constructor
      *
-     * @access  public
-     *
-     * @param   string  $file   (optional) File path
-     * @param   boolean $create (optional) Create flag
+     * @param string|null $file
+     * @param bool $create
      */
-    public function __construct($file = null, $create = false)
+    public function __construct(string $file = null, bool $create = false)
     {
         if ($file === null) {
             $file = __FILE__;
@@ -52,9 +47,9 @@ class Mutex
     /**
      * Get the standard mutex implementation
      *
-     * @return  \Opis\Utils\Mutex
+     * @return  Mutex
      */
-    public static function standard()
+    public static function standard(): self
     {
         static $instance;
 
@@ -66,25 +61,26 @@ class Mutex
     }
 
     /**
-     * Aquire the mutex
+     * Acquire the mutex
      *
+     * @param bool $wait
      * @return  boolean
      */
-    public function lock()
+    public function lock(bool $wait = true): bool
     {
         if ($this->fp === null) {
             $this->fp = fopen($this->file, 'r');
         }
 
-        return flock($this->fp, LOCK_EX);
+        return flock($this->fp, $wait ? LOCK_EX : LOCK_EX | LOCK_NB);
     }
 
     /**
-     * Realese the mutex
+     * Release the mutex
      *
      * @return  boolean
      */
-    public function unlock()
+    public function unlock(): bool
     {
         if ($this->fp !== null) {
             flock($this->fp, LOCK_UN);
