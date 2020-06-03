@@ -1,6 +1,6 @@
 <phpunit bootstrap="./vendor/autoload.php">
     <testsuites>
-        <testsuite name="All">
+        <testsuite name="Opis Utils">
             <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
