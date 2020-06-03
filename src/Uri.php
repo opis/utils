@@ -42,7 +42,7 @@ class Uri
     /**
      * @param array $components
      */
-    protected function __construct(array $components)
+    public function __construct(array $components)
     {
         $this->components = $components + [
                 'scheme' => null,
