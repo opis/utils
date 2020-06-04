@@ -27,11 +27,11 @@ class Uri
 
     protected const USERINFO_REGEX = '`^(?<user>[^:]+)(?::(?<pass>.*))?$`';
 
-    protected const HOST_LABEL_REGEX = '`^[a-z](?:[a-z0-9-]*[a-z0-9])?$`i';
+    protected const HOST_LABEL_REGEX = '`^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$`i';
 
     protected const AUTHORITY_REGEX = '`^(?:(?<userinfo>[^@]+)\@)?(?<host>[^:]+)(?::(?<port>\d+))?$`';
 
-    protected const PATH_REGEX = '`^^(?:(?:%[a-f0-9]{2})+|[a-z0-9-._~!$&\'()*+,;=:@/]+)*$`i';
+    protected const PATH_REGEX = '`^(?:(?:%[a-f0-9]{2})+|[a-z0-9-._~!$&\'()*+,;=:@/]+)*$`i';
 
     protected const QUERY_OR_FRAGMENT_REGEX = '`^(?:(?:%[a-f0-9]{2})+|[a-z0-9-._~!$&\'()*+,;=:@?/]+)*$`i';
 
@@ -288,7 +288,7 @@ class Uri
      */
     public static function isValidUserInfo(string $userInfo): bool
     {
-        /** @var array $userInfo */
+        /** @var array|string $userInfo */
 
         if (!preg_match(self::USERINFO_REGEX, $userInfo, $userInfo)) {
             return false;
@@ -516,9 +516,10 @@ class Uri
     /**
      * @param string $uri
      * @param bool $expand_authority
+     * @param bool $validate
      * @return array|null
      */
-    public static function parseComponents(string $uri, bool $expand_authority = true): ?array
+    public static function parseComponents(string $uri, bool $expand_authority = true, bool $validate = true): ?array
     {
         if (!preg_match(self::URI_REGEX, $uri, $uri)) {
             return null;
@@ -528,7 +529,7 @@ class Uri
 
         // scheme
         if (isset($uri[2]) && $uri[2] !== '') {
-            if (!self::isValidScheme($uri[2])) {
+            if ($validate && !self::isValidScheme($uri[2])) {
                 return null;
             }
             $comp['scheme'] = $uri[2];
@@ -543,14 +544,14 @@ class Uri
                     $comp['authority'] = '';
                 }
             } elseif ($expand_authority) {
-                $au = self::parseAuthorityComponents($uri[4]);
+                $au = self::parseAuthorityComponents($uri[4], $validate);
                 if ($au === null) {
                     return null;
                 }
                 $comp += $au;
                 unset($au);
             } else {
-                if (!self::isValidAuthority($uri[4])) {
+                if ($validate && !self::isValidAuthority($uri[4])) {
                     return null;
                 }
                 $comp['authority'] = $uri[4];
@@ -559,7 +560,7 @@ class Uri
 
         // path
         if (isset($uri[5])) {
-            if (!self::isValidPath($uri[5])) {
+            if ($validate && !self::isValidPath($uri[5])) {
                 return null;
             }
             $comp['path'] = $uri[5];
@@ -571,7 +572,7 @@ class Uri
 
         // query
         if (isset($uri[7]) && isset($uri[6][0])) {
-            if (!self::isValidQuery($uri[7])) {
+            if ($validate && !self::isValidQuery($uri[7])) {
                 return null;
             }
             $comp['query'] = $uri[7];
@@ -579,7 +580,7 @@ class Uri
 
         // fragment
         if (isset($uri[9]) && isset($uri[8][0])) {
-            if (!self::isValidFragment($uri[9])) {
+            if ($validate && !self::isValidFragment($uri[9])) {
                 return null;
             }
             $comp['fragment'] = $uri[9];
@@ -621,9 +622,10 @@ class Uri
 
     /**
      * @param string $authority
+     * @param bool $validate
      * @return array|null
      */
-    public static function parseAuthorityComponents(string $authority): ?array
+    public static function parseAuthorityComponents(string $authority, bool $validate = true): ?array
     {
         /** @var array|string $authority */
 
@@ -640,14 +642,14 @@ class Uri
             }
 
             // user
-            if (!self::isValidUser($ui['user'])) {
+            if ($validate && !self::isValidUser($ui['user'])) {
                 return null;
             }
             $comp['user'] = $ui['user'];
 
             // pass
             if (isset($ui['pass']) && $ui['pass'] !== '') {
-                if (!self::isValidPass($ui['pass'])) {
+                if ($validate && !self::isValidPass($ui['pass'])) {
                     return null;
                 }
                 $comp['pass'] = $ui['pass'];
@@ -657,7 +659,7 @@ class Uri
         }
 
         // host
-        if (!self::isValidHost($authority['host'])) {
+        if ($validate && !self::isValidHost($authority['host'])) {
             return null;
         }
         $comp['host'] = $authority['host'];
