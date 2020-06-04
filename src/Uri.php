@@ -17,6 +17,8 @@
 
 namespace Opis\Utils;
 
+use Opis\String\UnicodeString;
+
 class Uri
 {
     protected const URI_REGEX = '`^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$`';
@@ -27,7 +29,7 @@ class Uri
 
     protected const USERINFO_REGEX = '`^(?<user>[^:]+)(?::(?<pass>.*))?$`';
 
-    protected const HOST_LABEL_REGEX = '`^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$`i';
+    protected const HOST_LABEL_REGEX = '`^(?:(?:%[a-f0-9]{2})+|[a-z0-9-._~!$&\'()*+,;=]+)*$`i';
 
     protected const AUTHORITY_REGEX = '`^(?:(?<userinfo>[^@]+)\@)?(?<host>(\[[a-f0-9:]+\]|[^:]+))(?::(?<port>\d+))?$`i';
 
@@ -250,6 +252,29 @@ class Uri
     {
         $comp = self::parseComponents($uri);
         return $comp ? new static($comp) : null;
+    }
+
+    /**
+     * @param string $iri
+     * @return string
+     */
+    public static function percentEncoded(string $iri): string
+    {
+        $str = '';
+
+        foreach (UnicodeString::getCodePointsFromString($iri) as $code) {
+            $code = UnicodeString::getCharFromCodePoint($code);
+            $len = strlen($code);
+            if ($len === 1) {
+                $str .= $code;
+                continue;
+            }
+            for ($i = 0; $i < $len; $i++) {
+                $str .= '%' . dechex(ord($code[$i]));
+            }
+        }
+
+        return $str;
     }
 
     /**
