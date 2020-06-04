@@ -29,7 +29,7 @@ class Uri
 
     protected const HOST_LABEL_REGEX = '`^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$`i';
 
-    protected const AUTHORITY_REGEX = '`^(?:(?<userinfo>[^@]+)\@)?(?<host>[^:]+)(?::(?<port>\d+))?$`';
+    protected const AUTHORITY_REGEX = '`^(?:(?<userinfo>[^@]+)\@)?(?<host>(\[[a-f0-9:]+\]|[^:]+))(?::(?<port>\d+))?$`i';
 
     protected const PATH_REGEX = '`^(?:(?:%[a-f0-9]{2})+|[a-z0-9-._~!$&\'()*+,;=:@/]+)*$`i';
 
@@ -324,7 +324,7 @@ class Uri
             }
 
             return \filter_var(
-                    substr($host, 0, -1),
+                    substr($host, 1, -1),
                     \FILTER_VALIDATE_IP,
                     \FILTER_FLAG_IPV6
                 ) !== false;
