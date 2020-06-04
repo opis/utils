@@ -25,11 +25,11 @@ class Uri
 
     protected const SCHEME_REGEX = '`^[a-z][a-z0-9+-.]*$`i';
 
-    protected const USER_OR_PASS_REGEX = '`^(?:(?:%[a-f0-9]{2})+|[a-z0-9-]+)*$`i';
+    protected const USER_OR_PASS_REGEX = '`^(?:(?:%[a-f0-9]{2})+|[a-z0-9-._~!$&\'()*+,:;=]+)*$`i';
 
     protected const USERINFO_REGEX = '`^(?<user>[^:]+)(?::(?<pass>.*))?$`';
 
-    protected const HOST_LABEL_REGEX = '`^(?:(?:%[a-f0-9]{2})+|[a-z0-9-._~!$&\'()*+,;=]+)*$`i';
+    protected const HOST_LABEL_REGEX = '`^(?:(?:%[a-f0-9]{2})+|[a-z0-9-]+)*$`i';
 
     protected const AUTHORITY_REGEX = '`^(?:(?<userinfo>[^@]+)\@)?(?<host>(\[[a-f0-9:]+\]|[^:]+))(?::(?<port>\d+))?$`i';
 
