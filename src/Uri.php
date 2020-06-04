@@ -25,7 +25,7 @@ class Uri
 
     protected const SCHEME_REGEX = '`^[a-z][a-z0-9+-.]*$`i';
 
-    protected const USER_OR_PASS_REGEX = '`^(?:(?:%[a-f0-9]{2})+|[a-z0-9-._~!$&\'()*+,:;=]+)*$`i';
+    protected const USER_OR_PASS_REGEX = '`^(?:(?:%[a-f0-9]{2})+|[a-z0-9-]+)*$`i';
 
     protected const USERINFO_REGEX = '`^(?<user>[^:]+)(?::(?<pass>.*))?$`';
 
@@ -356,13 +356,16 @@ class Uri
         }
 
         // check ipv4
-        if (is_numeric($host[0])) {
+        if (preg_match('`^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\$`', $host)) {
             return \filter_var($host, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV4) !== false;
         }
 
         foreach (explode('.', $host) as $host) {
             // empty or too long label
             if ($host === '' || isset($host[63])) {
+                return false;
+            }
+            if ($host[0] === '-' || $host[-1] === '-') {
                 return false;
             }
             if (!preg_match(self::HOST_LABEL_REGEX, $host)) {
