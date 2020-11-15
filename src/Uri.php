@@ -154,6 +154,24 @@ class Uri
     }
 
     /**
+     * @return array|null
+     */
+    public function queryData(): ?array
+    {
+        if (!isset($this->components['query'])) {
+            return null;
+        }
+
+        if ($this->components['query'] === '') {
+            return [];
+        }
+
+        parse_str($this->components['query'], $query);
+
+        return $query;
+    }
+
+    /**
      * @return string|null
      */
     public function fragment(): ?string
