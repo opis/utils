@@ -777,4 +777,78 @@ class Uri
 
         return $dest;
     }
+
+    /**
+     * @param array $qs
+     * @param string|null $prefix
+     * @param string $separator
+     * @param bool $sort
+     * @return string
+     */
+    public static function buildQueryString(array $qs, ?string $prefix = null,
+        string $separator = '&', bool $sort = false): string
+    {
+        $isIndexed = function (array $array): bool {
+            for ($i = 0, $max = count($array); $i < $max; $i++) {
+                if (!array_key_exists($i, $array)) {
+                    return false;
+                }
+            }
+            return true;
+        };
+
+        $f = function (array $arr, ?string $prefix = null) use (&$f, &$isIndexed): iterable {
+            $indexed = $prefix !== null && $isIndexed($arr);
+
+            foreach ($arr as $key => $value) {
+                if ($prefix !== null) {
+                    $key = $prefix . ($indexed ? "[]" : "[{$key}]");
+                }
+                if (is_array($value)) {
+                    yield from $f($value, $key);
+                } else {
+                    yield $key => $value;
+                }
+            }
+        };
+
+        $data = [];
+
+        foreach ($f($qs, $prefix) as $key => $value) {
+            $item = is_string($key) ? static::percentEncoded($key) : $key;
+            if ($value !== null) {
+                $item .= '=';
+                $item .= is_string($value) ? static::percentEncoded($value) : $value;
+            }
+            if ($item === '' || $item === '=') {
+                continue;
+            }
+            $data[] = $item;
+        }
+
+        if (!$data) {
+            return '';
+        }
+
+        if ($sort) {
+            sort($data);
+        }
+
+        return implode($separator, $data);
+    }
+
+    /**
+     * @param string $query
+     * @return string
+     */
+    public static function normalizeQueryString(string $query): string
+    {
+        parse_str($query, $query);
+
+        if (!is_array($query)) {
+            return '';
+        }
+
+        return static::buildQueryString($query, null, '&', true);
+    }
 }
