@@ -5,3 +5,4 @@ shared/
 Gemfile.lock
 composer.lock
 .DS_Store
+.phpunit.result.cache
