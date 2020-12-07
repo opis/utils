@@ -23,7 +23,7 @@ class Uri
 {
     protected const URI_REGEX = '`^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$`';
 
-    protected const SCHEME_REGEX = '`^[a-z][a-z0-9+-.]*$`i';
+    protected const SCHEME_REGEX = '`^[a-z][a-z0-9-+.]*$`i';
 
     protected const USER_OR_PASS_REGEX = '`^(?:(?:%[a-f0-9]{2})+|[a-z0-9-._~!$&\'()*+,:;=]+)*$`i';
 
