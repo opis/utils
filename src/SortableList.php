@@ -19,9 +19,16 @@ namespace Opis\Utils;
 
 class SortableList
 {
-    private array $entries = [];
-    private bool $sorted = true;
-    private bool $descending = true;
+    private array $entries;
+    private bool $sorted;
+    private bool $descending;
+
+    public function __construct(array $entries = [], bool $sorted = true, bool $descending = false)
+    {
+        $this->entries = $entries;
+        $this->sorted = $sorted;
+        $this->descending = $descending;
+    }
 
     public function addItem($item, int $priority = 0): void
     {
